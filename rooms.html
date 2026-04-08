@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>房型介紹 — 示範訂房 | Rooms — Demo Booking</title>
+  <meta name="description" content="探索示範訂房12種精心設計的住宿空間，從經典雙人房到總統套房，每一間都是獨特的享受。">
+  <link rel="alternate" hreflang="zh-TW" href="rooms.html">
+  <link rel="alternate" hreflang="en" href="rooms.html">
+  <link rel="canonical" href="rooms.html">
+    <meta property="og:title" content="房型介紹 — 示範訂房">
+  <meta property="og:description" content="探索示範訂房12種精心設計的住宿空間">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/images/hero/hero.png">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/nav-footer.css">
+  <link rel="stylesheet" href="css/pages/home.css">
+  <link rel="stylesheet" href="css/pages/rooms.css">
+</head>
+<body>
+  <div id="navbar-mount"></div>
+  <main class="page-content" style="padding-top: 100px;">
+    <section class="section">
+      <div class="container">
+        <div class="section-header" data-animate>
+          <div class="section-label" data-i18n="rooms.title">房型介紹</div>
+          <h1 data-i18n="rooms.subtitle">探索十二種精心設計的住宿空間</h1>
+        </div>
+
+        <!-- 篩選列 -->
+        <div class="rooms-filter" id="rooms-filter" data-animate>
+          <button class="filter-btn active" data-filter="all" data-i18n="rooms.filter.all">全部房型</button>
+          <button class="filter-btn" data-filter="標準客房" data-i18n="rooms.filter.standard">標準客房</button>
+          <button class="filter-btn" data-filter="豪華客房" data-i18n="rooms.filter.deluxe">豪華客房</button>
+          <button class="filter-btn" data-filter="套房" data-i18n="rooms.filter.suite">套房</button>
+          <button class="filter-btn" data-filter="獨棟別墅" data-i18n="rooms.filter.villa">獨棟別墅</button>
+        </div>
+
+        <!-- 房型網格 -->
+        <div class="rooms-grid" id="rooms-list"></div>
+      </div>
+    </section>
+  </main>
+  <div id="footer-mount"></div>
+  <script type="module">
+    import { initI18n, t, getLang } from './js/i18n.js';
+    import { initApp, initScrollAnimations } from './js/navigation.js';
+    import { isLoggedIn } from './js/api/auth.js';
+    import { fetchAllRooms } from './js/api/rooms.js';
+    import { rooms as staticRooms } from './js/data/rooms.js';
+    initI18n(); initApp();
+
+    const lang = getLang();
+    const grid = document.getElementById('rooms-list');
+    let allRooms = [];
+    let currentFilter = 'all';
+
+    // 骨架載入狀態
+    function showSkeleton() {
+      grid.innerHTML = Array.from({ length: 6 }, (_, i) => `
+        <div class="room-card skeleton-card" style="transition-delay:${i * 60}ms">
+          <div class="room-card-img-wrap skeleton-shimmer" style="height:240px;border-radius:var(--radius-lg)"></div>
+          <div class="room-card-body">
+            <div class="skeleton-shimmer" style="width:60px;height:14px;border-radius:4px;margin-bottom:8px"></div>
+            <div class="skeleton-shimmer" style="width:70%;height:20px;border-radius:4px;margin-bottom:12px"></div>
+            <div class="skeleton-shimmer" style="width:90%;height:14px;border-radius:4px;margin-bottom:8px"></div>
+            <div class="skeleton-shimmer" style="width:50%;height:14px;border-radius:4px"></div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderRooms(filter) {
+      const filtered = filter === 'all' ? allRooms : allRooms.filter(r => r.category === filter || r.categoryEn === filter);
+      grid.innerHTML = filtered.map((room, i) => `
+        <div class="room-card" data-animate style="transition-delay:${i * 60}ms">
+          <a href="room-detail.html?id=${room.id}" style="text-decoration:none;color:inherit">
+            <div class="room-card-img-wrap">
+              <img src="${room.image}" alt="${lang === 'en' ? room.nameEn : room.name}" width="600" height="400" loading="lazy">
+              ${room.badge ? `<span class="room-card-badge badge badge-accent">${lang === 'en' ? room.badgeEn : room.badge}</span>` : ''}
+            </div>
+            <div class="room-card-body">
+              <div class="room-card-category">${lang === 'en' ? room.categoryEn : room.category}</div>
+              <h3 class="room-card-title">${lang === 'en' ? room.nameEn : room.name}</h3>
+              <p class="room-card-desc">${lang === 'en' ? room.descriptionEn.substring(0,80) : room.description.substring(0,60)}…</p>
+              <div class="room-card-specs">
+                <span>${room.area} ${t('rooms.area')}</span><span>•</span>
+                <span>${room.maxGuests} ${t('rooms.guests')}</span><span>•</span>
+                <span>${room.bed}</span>
+              </div>
+              <div class="room-card-footer">
+                <div class="room-card-price">
+                  <span class="currency">${t('common.currency')}</span>
+                  <span class="amount">${room.price.toLocaleString()}</span>
+                  <span class="unit">${t('rooms.pernight')}</span>
+                </div>
+                <span class="btn btn-sm btn-primary">${t('rooms.view')}</span>
+              </div>
+            </div>
+          </a>
+        </div>
+      `).join('');
+      initScrollAnimations();
+    }
+
+    // 載入資料：先嘗試 API，失敗則 fallback 到靜態資料
+    async function loadRooms() {
+      showSkeleton();
+      if (isLoggedIn()) {
+        const result = await fetchAllRooms();
+        if (result.ok && result.data.length > 0) {
+          allRooms = result.data;
+          renderRooms(currentFilter);
+          return;
+        }
+      }
+      // Fallback：未登入或 API 失敗 → 使用靜態資料
+      allRooms = staticRooms;
+      renderRooms(currentFilter);
+    }
+
+    loadRooms();
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        renderRooms(currentFilter);
+      });
+    });
+
+    window.addEventListener('langchange', () => location.reload());
+  </script>
+</body>
+</html>

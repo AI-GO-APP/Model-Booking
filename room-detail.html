@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>房型詳情 — 示範訂房 | Room Detail — Demo Booking</title>
+  <meta name="description" content="查看房型詳細規格、設施與價格，立即預訂您的頂級住宿體驗。">
+    <meta property="og:title" content="房型詳情 — 示範訂房">
+  <meta property="og:description" content="查看房型詳細規格與價格">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/images/hero/hero.png">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/nav-footer.css">
+  <link rel="stylesheet" href="css/pages/room-detail.css">
+</head>
+<body>
+  <div id="navbar-mount"></div>
+  <main class="page-content" style="padding-top: 100px;">
+    <div class="container">
+      <nav class="breadcrumb" id="breadcrumb" aria-label="breadcrumb"></nav>
+      <div class="room-detail-layout" id="room-detail"></div>
+    </div>
+  </main>
+  <div id="footer-mount"></div>
+
+  <script type="module">
+    import { initI18n, t, getLang } from './js/i18n.js';
+    import { initApp, initScrollAnimations } from './js/navigation.js';
+    import { rooms as staticRooms, getRoomById } from './js/data/rooms.js';
+    import { isLoggedIn } from './js/api/auth.js';
+    import { fetchRoomBySlug, fetchAllRooms } from './js/api/rooms.js';
+    initI18n(); initApp();
+
+    const lang = getLang();
+    const params = new URLSearchParams(window.location.search);
+    const roomId = params.get('id') || staticRooms[0].id;
+    let allRooms = staticRooms;
+
+    function renderRoom(room) {
+      if (!room) {
+        document.getElementById('room-detail').innerHTML = '<p>找不到該房型</p>';
+        return;
+      }
+      document.title = `${lang === 'en' ? room.nameEn : room.name} — ${lang === 'en' ? 'Demo Booking' : '示範訂房'}`;
+
+      document.getElementById('breadcrumb').innerHTML = `
+        <li><a href="index.html">${t('nav.home')}</a></li>
+        <li><a href="rooms.html">${t('nav.rooms')}</a></li>
+        <li class="current">${lang === 'en' ? room.nameEn : room.name}</li>
+      `;
+
+      const amenities = lang === 'en' ? room.amenitiesEn : room.amenities;
+      const related = allRooms.filter(r => r.id !== room.id).slice(0,3);
+
+      document.getElementById('room-detail').innerHTML = `
+        <div class="room-gallery" data-animate>
+          <div class="room-main-img">
+            <img src="${room.image}" alt="${lang === 'en' ? room.nameEn : room.name}" width="800" height="500">
+          </div>
+        </div>
+
+        <div class="room-info">
+          <div class="room-info-main" data-animate>
+            <span class="badge badge-accent">${lang === 'en' ? room.categoryEn : room.category}</span>
+            <h1>${lang === 'en' ? room.nameEn : room.name}</h1>
+            <p class="room-desc">${lang === 'en' ? room.descriptionEn : room.description}</p>
+
+            <div class="room-specs-grid">
+              <div class="spec-item"><span class="spec-label">${t('room.area')}</span><span class="spec-value">${room.area} ${t('rooms.area')}</span></div>
+              <div class="spec-item"><span class="spec-label">${t('room.floor')}</span><span class="spec-value">${room.floor}</span></div>
+              <div class="spec-item"><span class="spec-label">${t('room.bed')}</span><span class="spec-value">${room.bed}</span></div>
+              <div class="spec-item"><span class="spec-label">${t('room.maxguests')}</span><span class="spec-value">${room.maxGuests} ${t('rooms.guests')}</span></div>
+              <div class="spec-item"><span class="spec-label">${t('room.bathroom')}</span><span class="spec-value">${lang === 'en' ? room.bathroomEn : room.bathroom}</span></div>
+              <div class="spec-item"><span class="spec-label">${t('room.view')}</span><span class="spec-value">${lang === 'en' ? room.viewEn : room.view}</span></div>
+            </div>
+          </div>
+
+          <div class="room-amenities" data-animate>
+            <h3>${t('room.amenities')}</h3>
+            <ul class="amenities-list">
+              ${amenities.map(a => `<li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>${a}</li>`).join('')}
+            </ul>
+          </div>
+
+          <div class="room-booking-card card-glass" data-animate>
+            <div class="room-card-price">
+              <span class="currency">${t('common.currency')}</span>
+              <span class="amount">${room.price.toLocaleString()}</span>
+              <span class="unit">${t('rooms.pernight')}</span>
+            </div>
+            <a href="booking.html?room=${room.id}" class="btn btn-accent btn-lg" style="width:100%; margin-top: var(--space-4);">${t('rooms.book')}</a>
+          </div>
+        </div>
+
+        <section class="room-related" data-animate>
+          <h3>${t('room.related')}</h3>
+          <div class="rooms-grid related-grid">
+            ${related.map(r => `
+              <a href="room-detail.html?id=${r.id}" class="room-card" style="text-decoration:none;color:inherit">
+                <div class="room-card-img-wrap">
+                  <img src="${r.image}" alt="${lang === 'en' ? r.nameEn : r.name}" width="400" height="260" loading="lazy">
+                </div>
+                <div class="room-card-body">
+                  <div class="room-card-category">${lang === 'en' ? r.categoryEn : r.category}</div>
+                  <h4 class="room-card-title">${lang === 'en' ? r.nameEn : r.name}</h4>
+                  <div class="room-card-price">
+                    <span class="currency">${t('common.currency')}</span>
+                    <span class="amount">${r.price.toLocaleString()}</span>
+                    <span class="unit">${t('rooms.pernight')}</span>
+                  </div>
+                </div>
+              </a>
+            `).join('')}
+          </div>
+        </section>
+      `;
+      initScrollAnimations();
+    }
+
+    // 先用靜態資料渲染（即時首屏）
+    renderRoom(getRoomById(roomId));
+
+    // 再嘗試 API 更新
+    (async () => {
+      if (isLoggedIn()) {
+        const [roomResult, allResult] = await Promise.all([
+          fetchRoomBySlug(roomId),
+          fetchAllRooms(),
+        ]);
+        if (allResult.ok && allResult.data.length > 0) allRooms = allResult.data;
+        if (roomResult.ok && roomResult.data) renderRoom(roomResult.data);
+      }
+    })();
+
+    window.addEventListener('langchange', () => location.reload());
+  </script>
+</body>
+</html>

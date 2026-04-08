@@ -1,0 +1,26 @@
+# dotenv 環境變數
+.env
+.env.local
+.env.*.local
+
+# Node
+node_modules/
+dist/
+.DS_Store
+
+# Scripts
+scripts/*.json
+scripts/*.txt
+scripts/debug-lines.cjs
+scripts/explore-api.cjs
+scripts/explore.json
+scripts/final-verify.cjs
+scripts/fix-domain.cjs
+scripts/fix-lines.cjs
+scripts/inject-rooms.cjs
+scripts/setup-references.cjs
+scripts/test-api.cjs
+scripts/test-ct-create.cjs
+scripts/test-domain-filter.cjs
+scripts/test-frontend-flow.cjs
+scripts/audit-domain.cjs

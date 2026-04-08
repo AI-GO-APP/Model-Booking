@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>會員中心 — 示範訂房 | Account — Demo Booking</title>
+  <meta name="description" content="管理您的預訂、個人資料與偏好設定。">
+  <meta property="og:title" content="會員中心 — 示範訂房">
+  <meta property="og:description" content="管理您的預訂、個人資料與偏好設定。">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/nav-footer.css">
+  <link rel="stylesheet" href="css/pages/about.css">
+  <style>
+    .account-layout { display: grid; grid-template-columns: 240px 1fr; gap: var(--space-8); padding-bottom: var(--space-16); }
+    .account-sidebar { border-right: 1px solid var(--color-border-light); padding-right: var(--space-6); }
+    .account-nav { list-style: none; padding: 0; display: flex; flex-direction: column; gap: var(--space-1); }
+    .account-nav a { display: block; padding: var(--space-3) var(--space-4); font-size: var(--text-sm); color: var(--color-text-secondary); border-radius: var(--radius-md); transition: all var(--duration-fast) var(--ease-out); text-decoration: none; }
+    .account-nav a:hover, .account-nav a.active { background: var(--color-primary-light); color: var(--color-primary); font-weight: var(--font-medium); }
+    .order-item { padding: var(--space-5); border: 1px solid var(--color-border-light); border-radius: var(--radius-lg); display: flex; gap: var(--space-4); align-items: center; margin-bottom: var(--space-3); transition: box-shadow var(--duration-fast) var(--ease-out); }
+    .order-item:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+    .order-item img { width: 120px; height: 80px; object-fit: cover; border-radius: var(--radius-md); flex-shrink: 0; }
+    .order-status { padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); font-size: var(--text-xs); font-weight: var(--font-semibold); }
+    .status-confirmed { background: #D1FAE5; color: var(--success-600); }
+    .status-completed { background: var(--neutral-100); color: var(--neutral-600); }
+
+    /* 登入 Modal */
+    .auth-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(6px); z-index:9999; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity var(--duration-normal) var(--ease-out); }
+    .auth-overlay.open { opacity:1; pointer-events:all; }
+    .auth-modal { background:var(--color-bg-primary); border-radius:var(--radius-2xl); padding:var(--space-8); width:100%; max-width:420px; position:relative; transform:translateY(20px); transition:transform var(--duration-normal) var(--ease-out); box-shadow:0 24px 48px rgba(0,0,0,0.15); }
+    .auth-overlay.open .auth-modal { transform:translateY(0); }
+    .auth-close { position:absolute; top:var(--space-4); right:var(--space-4); background:none; border:none; cursor:pointer; color:var(--color-text-muted); font-size:24px; line-height:1; }
+    .auth-close:hover { color:var(--color-text-primary); }
+    .auth-title { font-family:var(--font-heading); font-size:var(--text-xl); margin-bottom:var(--space-6); text-align:center; }
+    .auth-switch { text-align:center; margin-top:var(--space-5); font-size:var(--text-sm); color:var(--color-text-secondary); }
+    .auth-switch a { color:var(--color-primary); font-weight:var(--font-medium); cursor:pointer; text-decoration:none; }
+
+    @media (max-width: 768px) {
+      .account-layout { grid-template-columns: 1fr; }
+      .account-sidebar { border-right: none; border-bottom: 1px solid var(--color-border-light); padding-right: 0; padding-bottom: var(--space-4); }
+      .account-nav { flex-direction: row; overflow-x: auto; }
+      .order-item { flex-direction: column; text-align: center; }
+      .order-item img { width: 100%; height: 160px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar-mount"></div>
+  <main class="page-content" style="padding-top: 100px;">
+    <div class="container">
+      <h1 style="margin-bottom:var(--space-8)" data-i18n="account.title">會員中心</h1>
+      <div class="account-layout">
+        <aside class="account-sidebar">
+          <ul class="account-nav">
+            <li><a href="#orders" class="active" data-i18n="account.orders">我的訂單</a></li>
+            <li><a href="#profile" data-i18n="account.profile">個人資料</a></li>
+            <li><a href="#prefs" data-i18n="account.preferences">偏好設定</a></li>
+            <li><a href="#" style="color:var(--color-error)" data-i18n="account.logout">登出</a></li>
+          </ul>
+        </aside>
+        <div class="account-content">
+          <h3 style="margin-bottom:var(--space-5)" data-i18n="account.orders">我的訂單</h3>
+          <div id="orders-list"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <div id="footer-mount"></div>
+
+  <!-- 登入/註冊 Modal -->
+  <div class="auth-overlay" id="auth-overlay">
+    <div class="auth-modal">
+      <button class="auth-close" id="auth-close">&times;</button>
+
+      <!-- 登入表單 -->
+      <div id="login-form">
+        <h2 class="auth-title" data-i18n="login.title">登入會員</h2>
+        <div class="form-group">
+          <label class="form-label" for="login-email" data-i18n="login.email">電子信箱</label>
+          <input type="email" class="form-input" id="login-email">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="login-password" data-i18n="login.password">密碼</label>
+          <input type="password" class="form-input" id="login-password">
+        </div>
+        <button class="btn btn-accent btn-lg" style="width:100%" id="login-submit" data-i18n="login.submit">登入</button>
+        <div class="auth-switch">
+          <span data-i18n="login.register.prompt">還沒有帳號？</span>
+          <a id="show-register" data-i18n="login.register.link">立即註冊</a>
+        </div>
+      </div>
+
+      <!-- 註冊表單 -->
+      <div id="register-form" style="display:none">
+        <h2 class="auth-title" data-i18n="register.title">註冊帳號</h2>
+        <div class="form-group">
+          <label class="form-label" for="reg-name" data-i18n="register.name">姓名</label>
+          <input type="text" class="form-input" id="reg-name">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="reg-email" data-i18n="register.email">電子信箱</label>
+          <input type="email" class="form-input" id="reg-email">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="reg-password" data-i18n="register.password">密碼</label>
+          <input type="password" class="form-input" id="reg-password">
+        </div>
+        <button class="btn btn-accent btn-lg" style="width:100%" id="register-submit" data-i18n="register.submit">註冊</button>
+        <div class="auth-switch">
+          <span data-i18n="register.login.prompt">已有帳號？</span>
+          <a id="show-login" data-i18n="register.login.link">立即登入</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 評價 Modal -->
+  <div class="auth-overlay" id="review-overlay">
+    <div class="auth-modal">
+      <button class="auth-close" id="review-close">&times;</button>
+      <h2 class="auth-title" data-i18n="review.title">住宿評價</h2>
+      <div style="text-align:center;margin-bottom:var(--space-4)">
+        <div id="review-stars" style="font-size:28px;cursor:pointer;display:inline-flex;gap:4px">
+          <span data-star="1">☆</span><span data-star="2">☆</span><span data-star="3">☆</span><span data-star="4">☆</span><span data-star="5">☆</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <textarea class="form-input" id="review-comment" rows="3" placeholder="分享您的住宿體驗..." style="resize:vertical"></textarea>
+      </div>
+      <button class="btn btn-accent btn-lg" style="width:100%" id="review-submit">送出評價</button>
+      <input type="hidden" id="review-order-id">
+    </div>
+  </div>
+
+  <script type="module">
+    import { initI18n, t, getLang } from './js/i18n.js';
+    import { initApp } from './js/navigation.js';
+    import { register, login, logout, isLoggedIn, getCachedUser } from './js/api/auth.js';
+    import { fetchMyOrders, submitReview } from './js/api/bookings.js';
+    initI18n(); initApp();
+    const lang = getLang();
+
+    // ──── 登入狀態管理 ────
+    function updateAuthState() {
+      if (!isLoggedIn()) {
+        document.getElementById('auth-overlay').classList.add('open');
+        document.getElementById('orders-list').innerHTML = '';
+      } else {
+        document.getElementById('auth-overlay').classList.remove('open');
+        const user = getCachedUser();
+        if (user) {
+          const nameEl = document.querySelector('.account-layout h1, .account-layout h3');
+          // 可顯示用戶名
+        }
+        loadOrders();
+      }
+    }
+
+    // ──── Modal 切換 ────
+    document.getElementById('auth-close').onclick = () => {
+      document.getElementById('auth-overlay').classList.remove('open');
+    };
+    document.getElementById('show-register').onclick = () => {
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('register-form').style.display = 'block';
+    };
+    document.getElementById('show-login').onclick = () => {
+      document.getElementById('register-form').style.display = 'none';
+      document.getElementById('login-form').style.display = 'block';
+    };
+
+    // ──── 真實登入（呼叫 AI GO API） ────
+    document.getElementById('login-submit').onclick = async () => {
+      const email = document.getElementById('login-email').value;
+      const pwd = document.getElementById('login-password').value;
+      if (!email || !pwd) { alert(t('validation.required') || '請填寫所有欄位'); return; }
+
+      const btn = document.getElementById('login-submit');
+      btn.disabled = true; btn.textContent = '登入中...';
+
+      const r = await login(email, pwd);
+      btn.disabled = false; btn.textContent = t('login.submit') || '登入';
+
+      if (r.ok) {
+        updateAuthState();
+      } else {
+        alert(r.data?.detail || r.data?.message || '登入失敗，請檢查帳號密碼');
+      }
+    };
+
+    // ──── 真實註冊 ────
+    document.getElementById('register-submit').onclick = async () => {
+      const name = document.getElementById('reg-name').value;
+      const email = document.getElementById('reg-email').value;
+      const pwd = document.getElementById('reg-password').value;
+      if (!name || !email || !pwd) { alert(t('validation.required') || '請填寫所有欄位'); return; }
+      if (pwd.length < 8) { alert('密碼至少需要 8 個字元'); return; }
+
+      const btn = document.getElementById('register-submit');
+      btn.disabled = true; btn.textContent = '註冊中...';
+
+      const r = await register(email, pwd, name);
+      btn.disabled = false; btn.textContent = t('register.submit') || '註冊';
+
+      if (r.ok) {
+        updateAuthState();
+      } else {
+        alert(r.data?.detail || r.data?.message || '註冊失敗');
+      }
+    };
+
+    // ──── 登出 ────
+    document.querySelector('[data-i18n="account.logout"]')?.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await logout();
+      location.reload();
+    });
+
+    // ──── 動態訂單列表 ────
+    async function loadOrders() {
+      const listEl = document.getElementById('orders-list');
+      listEl.innerHTML = `
+        <div style="text-align:center;padding:var(--space-8);color:var(--color-text-muted)">
+          <div class="skeleton-shimmer" style="height:80px;border-radius:var(--radius-lg);margin-bottom:var(--space-3)"></div>
+          <div class="skeleton-shimmer" style="height:80px;border-radius:var(--radius-lg)"></div>
+        </div>
+      `;
+
+      const r = await fetchMyOrders();
+      if (!r.ok || !r.data || r.data.length === 0) {
+        listEl.innerHTML = `
+          <div style="text-align:center;padding:var(--space-10);color:var(--color-text-muted)">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:var(--space-3)"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            <p style="margin-bottom:var(--space-4)">${lang === 'en' ? 'No bookings yet' : '目前沒有訂單'}</p>
+            <a href="rooms.html" class="btn btn-accent btn-sm">${lang === 'en' ? 'Browse Rooms' : '瀏覽房型'}</a>
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = r.data.map(o => {
+        const statusMap = {
+          confirmed: { cls: 'status-confirmed', label: lang === 'en' ? 'Confirmed' : '已確認' },
+          completed: { cls: 'status-completed', label: lang === 'en' ? 'Completed' : '已完成' },
+          pending: { cls: 'status-confirmed', label: lang === 'en' ? 'Pending' : '待確認' },
+          cancelled: { cls: 'status-completed', label: lang === 'en' ? 'Cancelled' : '已取消' },
+        };
+        const st = statusMap[o.bookingStatus] || statusMap.pending;
+        const showReview = o.bookingStatus === 'completed' && !o.reviewRating;
+        const hasReview = !!o.reviewRating;
+
+        return `
+          <div class="order-item">
+            <div style="flex:1">
+              <div style="font-weight:var(--font-medium)">${o.roomName || o.name}</div>
+              <div style="font-size:var(--text-sm);color:var(--color-text-secondary)">${o.checkin || ''} ~ ${o.checkout || ''}</div>
+              <div style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--space-1)">
+                ${t('common.currency')} ${(o.amountTotal || 0).toLocaleString()} · ${o.nights || '-'} ${lang === 'en' ? 'nights' : '晚'}
+              </div>
+              ${hasReview ? `<div style="margin-top:var(--space-1);font-size:var(--text-xs);color:var(--color-accent)">⭐ ${o.reviewRating}/5 — ${o.reviewComment || ''}</div>` : ''}
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:var(--space-2)">
+              <span class="order-status ${st.cls}">${st.label}</span>
+              ${showReview ? `<button class="btn btn-sm btn-outline review-btn" data-order-id="${o.id}" style="font-size:var(--text-xs)">${lang === 'en' ? 'Review' : '評價'}</button>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // 綁定評價按鈕
+      listEl.querySelectorAll('.review-btn').forEach(btn => {
+        btn.addEventListener('click', () => openReview(btn.dataset.orderId));
+      });
+    }
+
+    // ──── 評價系統 ────
+    let currentRating = 0;
+    const starsEl = document.getElementById('review-stars');
+
+    starsEl.querySelectorAll('[data-star]').forEach(star => {
+      star.addEventListener('click', () => {
+        currentRating = parseInt(star.dataset.star);
+        updateStars();
+      });
+      star.addEventListener('mouseenter', () => {
+        const val = parseInt(star.dataset.star);
+        starsEl.querySelectorAll('[data-star]').forEach(s => {
+          s.textContent = parseInt(s.dataset.star) <= val ? '★' : '☆';
+        });
+      });
+    });
+    starsEl.addEventListener('mouseleave', updateStars);
+
+    function updateStars() {
+      starsEl.querySelectorAll('[data-star]').forEach(s => {
+        s.textContent = parseInt(s.dataset.star) <= currentRating ? '★' : '☆';
+      });
+    }
+
+    function openReview(orderId) {
+      currentRating = 0; updateStars();
+      document.getElementById('review-comment').value = '';
+      document.getElementById('review-order-id').value = orderId;
+      document.getElementById('review-overlay').classList.add('open');
+    }
+
+    document.getElementById('review-close').onclick = () => {
+      document.getElementById('review-overlay').classList.remove('open');
+    };
+
+    document.getElementById('review-submit').onclick = async () => {
+      if (currentRating === 0) { alert(lang === 'en' ? 'Please select a rating' : '請選擇評分'); return; }
+      const orderId = document.getElementById('review-order-id').value;
+      const comment = document.getElementById('review-comment').value;
+
+      const btn = document.getElementById('review-submit');
+      btn.disabled = true; btn.textContent = '送出中...';
+
+      const r = await submitReview(orderId, currentRating, comment);
+      btn.disabled = false; btn.textContent = '送出評價';
+
+      if (r.ok) {
+        document.getElementById('review-overlay').classList.remove('open');
+        loadOrders(); // 重新載入
+      } else {
+        alert('評價送出失敗');
+      }
+    };
+
+    // ──── 初始化 ────
+    updateAuthState();
+    window.addEventListener('langchange', () => location.reload());
+  </script>
+</body>
+</html>

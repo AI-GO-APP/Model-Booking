@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>隱私權政策 — 示範訂房 | Privacy — Demo Booking</title>
+  <meta name="description" content="示範訂房隱私權政策，說明資料收集範圍、使用方式與保護措施。">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/nav-footer.css">
+  <link rel="stylesheet" href="css/pages/about.css">
+</head>
+<body>
+  <div id="navbar-mount"></div>
+  <main class="page-content" style="padding-top:100px">
+    <div class="container-narrow" style="padding-bottom:var(--space-16)">
+      <h1 style="margin-bottom:var(--space-8)" data-i18n="footer.privacy">隱私權政策</h1>
+      <div class="card-glass" style="padding:var(--space-8)" id="privacy-content"></div>
+    </div>
+  </main>
+  <div id="footer-mount"></div>
+  <script type="module">
+    import { initI18n, t, getLang } from './js/i18n.js';
+    import { initApp } from './js/navigation.js';
+    initI18n(); initApp();
+    const isEn = getLang() === 'en';
+    document.getElementById('privacy-content').innerHTML = isEn ? `
+      <p style="color:var(--color-text-muted);margin-bottom:var(--space-6)">Effective: April 2026</p>
+      <h3>1. Information We Collect</h3>
+      <p>We collect personal information you provide during booking: name, email, phone number, and payment details. We also collect browsing data through cookies for service improvement.</p>
+      <h3 style="margin-top:var(--space-6)">2. How We Use Your Data</h3>
+      <p>Your data is used to: process reservations, communicate booking confirmations and updates, improve our services, and comply with legal obligations. We do not sell your personal data to third parties.</p>
+      <h3 style="margin-top:var(--space-6)">3. Data Protection</h3>
+      <p>All payment information is encrypted using SSL/TLS protocols. We implement industry-standard security measures to protect your data from unauthorized access, alteration, or disclosure.</p>
+      <h3 style="margin-top:var(--space-6)">4. Cookies</h3>
+      <p>We use essential cookies for site functionality and language preferences. Analytics cookies help us understand usage patterns. You can manage cookie preferences in your browser settings.</p>
+      <h3 style="margin-top:var(--space-6)">5. Your Rights</h3>
+      <p>You have the right to access, correct, or delete your personal data. To exercise these rights, please contact us at privacy@demobooking.tw. We will respond within 30 days.</p>
+    ` : `
+      <p style="color:var(--color-text-muted);margin-bottom:var(--space-6)">生效日期：2026 年 4 月</p>
+      <h3>一、我們收集的資訊</h3>
+      <p>我們收集您在預訂時提供的個人資訊：姓名、電子信箱、聯絡電話及付款資訊。我們亦透過 Cookie 收集瀏覽數據以改善服務品質。</p>
+      <h3 style="margin-top:var(--space-6)">二、資料用途</h3>
+      <p>您的資料用於：處理預訂、寄送訂房確認與更新通知、改善服務品質、以及遵守法律義務。我們不會將您的個人資料出售給第三方。</p>
+      <h3 style="margin-top:var(--space-6)">三、資料保護</h3>
+      <p>所有付款資訊均透過 SSL/TLS 協定加密。我們採用業界標準的安全措施，防止您的資料遭到未經授權的存取、竄改或洩露。</p>
+      <h3 style="margin-top:var(--space-6)">四、Cookie 使用</h3>
+      <p>我們使用必要 Cookie 以維持網站功能與語言偏好設定。分析用 Cookie 幫助我們了解使用模式。您可在瀏覽器設定中管理 Cookie 偏好。</p>
+      <h3 style="margin-top:var(--space-6)">五、您的權利</h3>
+      <p>您有權存取、更正或刪除您的個人資料。如欲行使上述權利，請來信 privacy@demobooking.tw，我們將於 30 日內回覆。</p>
+    `;
+    window.addEventListener('langchange', () => location.reload());
+  </script>
+</body>
+</html>

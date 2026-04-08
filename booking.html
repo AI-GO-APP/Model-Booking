@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>預訂流程 — 示範訂房 | Booking — Demo Booking</title>
+  <meta name="description" content="選擇您的入住日期、填寫旅客資訊，輕鬆完成預訂。">
+    <meta property="og:title" content="預訂流程 — 示範訂房">
+  <meta property="og:description" content="選擇日期與旅客資訊完成預訂">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/images/hero/hero.png">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/nav-footer.css">
+  <link rel="stylesheet" href="css/pages/booking.css">
+</head>
+<body>
+  <div id="navbar-mount"></div>
+  <main class="page-content" style="padding-top: 100px;">
+    <div class="container-narrow">
+      <div class="section-header"><h1 data-i18n="booking.title">預訂流程</h1></div>
+
+      <!-- 進度指示器 -->
+      <div class="stepper" id="stepper">
+        <div class="step active" data-step="1"><div class="step-circle">1</div><span class="step-label" data-i18n="booking.step1">選擇日期</span></div>
+        <div class="step-line"></div>
+        <div class="step" data-step="2"><div class="step-circle">2</div><span class="step-label" data-i18n="booking.step2">旅客資訊</span></div>
+        <div class="step-line"></div>
+        <div class="step" data-step="3"><div class="step-circle">3</div><span class="step-label" data-i18n="booking.step3">確認訂單</span></div>
+      </div>
+
+      <!-- Step 1: 選擇日期 -->
+      <div class="booking-step" id="step-1">
+        <div class="card-glass booking-card">
+          <h3 id="selected-room-name">—</h3>
+          <div id="selected-room-preview" style="margin: var(--space-4) 0;"></div>
+          <div class="form-group">
+            <label class="form-label" for="b-checkin" data-i18n="hero.checkin">入住日期</label>
+            <input type="date" class="form-input" id="b-checkin">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="b-checkout" data-i18n="hero.checkout">退房日期</label>
+            <input type="date" class="form-input" id="b-checkout">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="b-guests" data-i18n="hero.guests">旅客人數</label>
+            <input type="number" class="form-input" id="b-guests" min="1" max="10" value="2">
+          </div>
+          <button class="btn btn-accent btn-lg" style="width:100%" id="step1-next" data-i18n="booking.next">下一步</button>
+        </div>
+      </div>
+
+      <!-- Step 2: 旅客資訊 -->
+      <div class="booking-step" id="step-2" style="display:none">
+        <div class="card-glass booking-card">
+          <h3 data-i18n="booking.guest.info">旅客資訊</h3>
+          <div class="form-group">
+            <label class="form-label" for="g-name" data-i18n="booking.guest.name">姓名 <span class="required">*</span></label>
+            <input type="text" class="form-input" id="g-name" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="g-phone" data-i18n="booking.guest.phone">聯絡電話 <span class="required">*</span></label>
+            <input type="tel" class="form-input" id="g-phone" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="g-email" data-i18n="booking.guest.email">電子信箱 <span class="required">*</span></label>
+            <input type="email" class="form-input" id="g-email" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="g-request" data-i18n="booking.guest.request">特殊需求</label>
+            <textarea class="form-textarea" id="g-request" rows="3"></textarea>
+          </div>
+          <div class="flex gap-4">
+            <button class="btn btn-outline" style="flex:1" id="step2-prev" data-i18n="booking.prev">上一步</button>
+            <button class="btn btn-accent" style="flex:2" id="step2-next" data-i18n="booking.next">下一步</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: 確認訂單 -->
+      <div class="booking-step" id="step-3" style="display:none">
+        <div class="card-glass booking-card">
+          <h3 data-i18n="booking.summary">訂單摘要</h3>
+          <div id="order-summary" class="order-summary"></div>
+          <div class="flex gap-4" style="margin-top: var(--space-6)">
+            <button class="btn btn-outline" style="flex:1" id="step3-prev" data-i18n="booking.prev">上一步</button>
+            <a href="checkout.html" class="btn btn-accent" style="flex:2; text-align:center" id="step3-checkout" data-i18n="booking.confirm">前往結帳</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <div id="footer-mount"></div>
+
+  <script type="module">
+    import { initI18n, t, getLang } from './js/i18n.js';
+    import { initApp } from './js/navigation.js';
+    import { rooms as staticRooms, getRoomById } from './js/data/rooms.js';
+    import { isLoggedIn } from './js/api/auth.js';
+    import { fetchRoomBySlug } from './js/api/rooms.js';
+    initI18n(); initApp();
+
+    const lang = getLang();
+    const params = new URLSearchParams(window.location.search);
+    const roomId = params.get('room') || staticRooms[0].id;
+    let room = getRoomById(roomId) || staticRooms[0];
+
+    function updateRoomDisplay() {
+      document.getElementById('selected-room-name').textContent = lang === 'en' ? room.nameEn : room.name;
+      document.getElementById('selected-room-preview').innerHTML = `
+        <img src="${room.image}" alt="${room.name}" style="width:100%;border-radius:var(--radius-lg);aspect-ratio:16/9;object-fit:cover">
+      `;
+    }
+    updateRoomDisplay();
+
+    // 嘗試 API 取得最新資料
+    (async () => {
+      if (isLoggedIn()) {
+        const r = await fetchRoomBySlug(roomId);
+        if (r.ok && r.data) { room = r.data; updateRoomDisplay(); }
+      }
+    })();
+
+    // 日期預設
+    const today = new Date();
+    const tmr = new Date(today); tmr.setDate(tmr.getDate()+1);
+    const day3 = new Date(today); day3.setDate(day3.getDate()+2);
+    document.getElementById('b-checkin').value = tmr.toISOString().split('T')[0];
+    document.getElementById('b-checkout').value = day3.toISOString().split('T')[0];
+
+    // 步驟切換
+    let currentStep = 1;
+    function showStep(n) {
+      currentStep = n;
+      [1,2,3].forEach(i => {
+        document.getElementById(`step-${i}`).style.display = i === n ? 'block' : 'none';
+      });
+      document.querySelectorAll('.step').forEach(s => {
+        const sn = parseInt(s.dataset.step);
+        s.classList.toggle('active', sn === n);
+        s.classList.toggle('completed', sn < n);
+      });
+      document.querySelectorAll('.step-line').forEach((line, idx) => {
+        line.classList.toggle('completed', idx < n - 1);
+      });
+      if (n === 3) renderSummary();
+    }
+
+    document.getElementById('step1-next').onclick = () => {
+      const ci = document.getElementById('b-checkin').value;
+      const co = document.getElementById('b-checkout').value;
+      if (new Date(co) <= new Date(ci)) { alert(t('validation.date')); return; }
+      showStep(2);
+    };
+    document.getElementById('step2-prev').onclick = () => showStep(1);
+    document.getElementById('step2-next').onclick = () => {
+      const name = document.getElementById('g-name').value;
+      const phone = document.getElementById('g-phone').value;
+      const email = document.getElementById('g-email').value;
+      if (!name || !phone || !email) { alert(t('validation.required')); return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert(t('validation.email')); return; }
+      if (!/^[0-9+\-()\s]{7,}$/.test(phone)) { alert(t('validation.phone')); return; }
+      showStep(3);
+    };
+    document.getElementById('step3-prev').onclick = () => showStep(2);
+
+    function renderSummary() {
+      const ci = document.getElementById('b-checkin').value;
+      const co = document.getElementById('b-checkout').value;
+      const guests = document.getElementById('b-guests').value;
+      const nights = Math.max(1, Math.round((new Date(co) - new Date(ci)) / 86400000));
+      const total = room.price * nights;
+
+      document.getElementById('order-summary').innerHTML = `
+        <div class="summary-row"><span>${t('nav.rooms')}</span><span>${lang==='en'?room.nameEn:room.name}</span></div>
+        <div class="summary-row"><span>${t('booking.dates')}</span><span>${ci} ~ ${co}</span></div>
+        <div class="summary-row"><span>${t('hero.guests')}</span><span>${guests} ${t('common.guests')}</span></div>
+        <div class="summary-row"><span>${t('rooms.pernight')}</span><span>${t('common.currency')} ${room.price.toLocaleString()} × ${nights} ${t('common.nights')}</span></div>
+        <hr class="divider">
+        <div class="summary-row summary-total"><span>${t('booking.total')}</span><span class="price-display">${t('common.currency')} ${total.toLocaleString()}</span></div>
+      `;
+
+      const gName = encodeURIComponent(document.getElementById('g-name').value);
+      const gPhone = encodeURIComponent(document.getElementById('g-phone').value);
+      const gEmail = encodeURIComponent(document.getElementById('g-email').value);
+      const special = encodeURIComponent(document.getElementById('b-special')?.value || '');
+      document.getElementById('step3-checkout').href = `checkout.html?room=${room.id}&checkin=${ci}&checkout=${co}&guests=${guests}&total=${total}&gname=${gName}&gphone=${gPhone}&gemail=${gEmail}&special=${special}`;
+    }
+
+    window.addEventListener('langchange', () => location.reload());
+  </script>
+</body>
+</html>

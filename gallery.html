@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>精選相簿 — 示範訂房 | Gallery — Demo Booking</title>
+  <meta name="description" content="瀏覽示範訂房的精選照片，每一個角度都是一幅畫。">
+    <meta property="og:title" content="精選相簿 — 示範訂房">
+  <meta property="og:description" content="瀏覽精選照片">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/images/hero/hero.png">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/nav-footer.css">
+  <link rel="stylesheet" href="css/pages/rooms.css">
+  <link rel="stylesheet" href="css/pages/about.css">
+  <style>
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--space-4); }
+    .gallery-item { border-radius: var(--radius-xl); overflow: hidden; cursor: pointer; aspect-ratio: 4/3; }
+    .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--duration-slow) var(--ease-out); }
+    .gallery-item:hover img { transform: scale(1.06); }
+  </style>
+</head>
+<body>
+  <div id="navbar-mount"></div>
+  <main class="page-content">
+    <section class="page-hero">
+      <div class="hero-bg"><img src="assets/images/hero/hero.png" alt="精選相簿" width="1920" height="600"><div class="hero-overlay"></div></div>
+      <div class="page-hero-content">
+        <div class="section-label" style="color:var(--gold-400)" data-i18n="nav.gallery">精選相簿</div>
+        <h1 data-i18n="gallery.subtitle">每一個角度都是一幅畫</h1>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="rooms-filter" id="gallery-filter">
+          <button class="filter-btn active" data-filter="all" data-i18n="gallery.filter.all">全部</button>
+          <button class="filter-btn" data-filter="rooms" data-i18n="gallery.filter.rooms">客房</button>
+          <button class="filter-btn" data-filter="public" data-i18n="gallery.filter.public">公共區域</button>
+          <button class="filter-btn" data-filter="scenery" data-i18n="gallery.filter.scenery">周邊景觀</button>
+        </div>
+        <div class="gallery-grid" id="gallery-grid"></div>
+      </div>
+    </section>
+
+    <!-- Lightbox -->
+    <div class="lightbox-overlay" id="lightbox">
+      <img class="lightbox-img" id="lightbox-img" src="" alt="">
+    </div>
+  </main>
+  <div id="footer-mount"></div>
+  <script type="module">
+    import { initI18n, getLang } from './js/i18n.js';
+    import { initApp, initScrollAnimations } from './js/navigation.js';
+    import { rooms as staticRooms } from './js/data/rooms.js';
+    import { isLoggedIn } from './js/api/auth.js';
+    import { fetchAllRooms } from './js/api/rooms.js';
+    initI18n(); initApp();
+
+    const lang = getLang();
+    let allRooms = staticRooms;
+
+    function buildGalleryItems() {
+      return [
+        ...allRooms.map(r => ({ src: r.image, alt: lang === 'en' ? r.nameEn : r.name, cat: 'rooms' })),
+        { src: 'assets/images/facilities/pool.png', alt: lang === 'en' ? 'Infinity Pool' : '無邊際泳池', cat: 'public' },
+        { src: 'assets/images/facilities/spa.png', alt: lang === 'en' ? 'SPA & Wellness' : 'SPA 水療中心', cat: 'public' },
+        { src: 'assets/images/facilities/restaurant.png', alt: lang === 'en' ? 'Rooftop Restaurant' : '頂樓景觀餐廳', cat: 'public' },
+        { src: 'assets/images/facilities/gym.png', alt: lang === 'en' ? 'Fitness Center' : '健身中心', cat: 'public' },
+        { src: 'assets/images/hero/hero.png', alt: lang === 'en' ? 'Hotel Exterior' : '飯店外觀', cat: 'scenery' },
+      ];
+    }
+    let galleryItems = buildGalleryItems();
+
+    const grid = document.getElementById('gallery-grid');
+    function render(filter) {
+      const items = filter === 'all' ? galleryItems : galleryItems.filter(i => i.cat === filter);
+      grid.innerHTML = items.map(item => `
+        <div class="gallery-item" data-animate data-src="${item.src}">
+          <img src="${item.src}" alt="${item.alt}" width="400" height="300" loading="lazy">
+        </div>
+      `).join('');
+      initScrollAnimations();
+      // Lightbox
+      grid.querySelectorAll('.gallery-item').forEach(el => {
+        el.addEventListener('click', () => {
+          document.getElementById('lightbox-img').src = el.dataset.src;
+          document.getElementById('lightbox').classList.add('open');
+        });
+      });
+    }
+    render('all');
+
+    // 嘗試 API 更新
+    (async () => {
+      if (isLoggedIn()) {
+        const r = await fetchAllRooms();
+        if (r.ok && r.data.length > 0) {
+          allRooms = r.data;
+          galleryItems = buildGalleryItems();
+          render('all');
+        }
+      }
+    })();
+
+    document.querySelectorAll('#gallery-filter .filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#gallery-filter .filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        render(btn.dataset.filter);
+      });
+    });
+
+    document.getElementById('lightbox').addEventListener('click', () => {
+      document.getElementById('lightbox').classList.remove('open');
+    });
+
+    window.addEventListener('langchange', () => location.reload());
+  </script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>聯絡我們 — 示範訂房 | Contact — Demo Booking</title>
+  <meta name="description" content="聯絡示範訂房：電話 02-2498-8888，地址新北市金山區中山路168號，或填寫線上表單。">
+    <meta property="og:title" content="聯絡我們 — 示範訂房">
+  <meta property="og:description" content="聯繫我們與交通指南">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/images/hero/hero.png">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/nav-footer.css">
+  <link rel="stylesheet" href="css/pages/about.css">
+</head>
+<body>
+  <div id="navbar-mount"></div>
+  <main class="page-content">
+    <section class="page-hero" style="height:300px">
+      <div class="hero-bg"><img src="assets/images/hero/hero.png" alt="聯絡我們" width="1920" height="400"><div class="hero-overlay"></div></div>
+      <div class="page-hero-content">
+        <div class="section-label" style="color:var(--gold-400)" data-i18n="nav.contact">聯絡我們</div>
+        <h1 data-i18n="contact.subtitle">有任何問題？歡迎隨時與我們聯繫</h1>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="grid grid-2" style="gap: var(--space-10); align-items: start;">
+          <!-- 聯絡表單 -->
+          <div class="card-glass" style="padding:var(--space-8)" data-animate>
+            <h3 style="margin-bottom:var(--space-5)" data-i18n="contact.form.title">寫信給我們</h3>
+            <form id="contact-form">
+              <div class="form-group">
+                <label class="form-label" for="c-name" data-i18n="contact.form.name">您的姓名</label>
+                <input type="text" class="form-input" id="c-name" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="c-email" data-i18n="contact.form.email">電子信箱</label>
+                <input type="email" class="form-input" id="c-email" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="c-subject" data-i18n="contact.form.subject">主旨</label>
+                <input type="text" class="form-input" id="c-subject">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="c-message" data-i18n="contact.form.message">您的訊息</label>
+                <textarea class="form-textarea" id="c-message" rows="5" required></textarea>
+              </div>
+              <button type="submit" class="btn btn-accent btn-lg" style="width:100%" data-i18n="contact.form.submit">送出訊息</button>
+            </form>
+          </div>
+
+          <!-- 聯絡資訊 -->
+          <div data-animate style="transition-delay:100ms">
+            <div style="margin-bottom:var(--space-8)">
+              <h3 style="margin-bottom:var(--space-4)" data-i18n="contact.address">地址</h3>
+              <p style="color:var(--color-text-secondary)" data-i18n="contact.address.value">208 新北市金山區中山路 168 號</p>
+            </div>
+            <div style="margin-bottom:var(--space-8)">
+              <h3 style="margin-bottom:var(--space-4)" data-i18n="contact.phone">電話</h3>
+              <p><a href="tel:+886224988888" style="font-size:var(--text-xl);font-weight:var(--font-semibold)">02-2498-8888</a></p>
+            </div>
+            <div style="margin-bottom:var(--space-8)">
+              <h3 style="margin-bottom:var(--space-4)" data-i18n="contact.email">信箱</h3>
+              <p><a href="mailto:info@demobooking.tw" style="font-size:var(--text-lg)">info@demobooking.tw</a></p>
+            </div>
+            <div>
+              <h3 style="margin-bottom:var(--space-4)" data-i18n="contact.transport">交通方式</h3>
+              <p style="color:var(--color-text-secondary); font-size:var(--text-sm); line-height:var(--leading-relaxed)" data-i18n="contact.transport.detail">
+                🚗 自駕：國道3號 → 萬里交流道 → 台2線往金山方向約 15 分鐘
+                🚌 客運：台北車站搭乘國光客運1815至金山站，轉乘免費接駁車
+                🚃 火車：搭至基隆站，轉乘基隆客運至金山（約 40 分鐘）
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div id="footer-mount"></div>
+  <script type="module">
+    import { initI18n, t } from './js/i18n.js';
+    import { initApp, initScrollAnimations } from './js/navigation.js';
+    initI18n(); initApp(); initScrollAnimations();
+
+    document.getElementById('contact-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert(t('contact.form.success'));
+      e.target.reset();
+    });
+
+    window.addEventListener('langchange', () => location.reload());
+  </script>
+</body>
+</html>

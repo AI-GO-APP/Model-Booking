@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>服務條款 — 示範訂房 | Terms — Demo Booking</title>
+  <meta name="description" content="示範訂房服務條款，包含預訂規範、取消政策、入住須知等重要資訊。">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/nav-footer.css">
+  <link rel="stylesheet" href="css/pages/about.css">
+</head>
+<body>
+  <div id="navbar-mount"></div>
+  <main class="page-content" style="padding-top:100px">
+    <div class="container-narrow" style="padding-bottom:var(--space-16)">
+      <h1 style="margin-bottom:var(--space-8)" data-i18n="footer.terms">服務條款</h1>
+      <div class="card-glass" style="padding:var(--space-8)" id="terms-content"></div>
+    </div>
+  </main>
+  <div id="footer-mount"></div>
+  <script type="module">
+    import { initI18n, t, getLang } from './js/i18n.js';
+    import { initApp } from './js/navigation.js';
+    initI18n(); initApp();
+    const isEn = getLang() === 'en';
+    document.getElementById('terms-content').innerHTML = isEn ? `
+      <p style="color:var(--color-text-muted);margin-bottom:var(--space-6)">Last updated: April 2026</p>
+      <h3>1. Reservation Policy</h3>
+      <p>All reservations are subject to availability. A valid credit card is required at the time of booking. Confirmation will be sent to the email address provided within 24 hours.</p>
+      <h3 style="margin-top:var(--space-6)">2. Check-in / Check-out</h3>
+      <p>Check-in: from 3:00 PM. Check-out: before 11:00 AM. Early check-in and late check-out are subject to availability and may incur additional charges. A valid government-issued photo ID is required.</p>
+      <h3 style="margin-top:var(--space-6)">3. Cancellation Policy</h3>
+      <p>Free cancellation: 7+ days before check-in. 3–7 days prior: 50% of first night's rate. Within 3 days: full first night's rate. Special holiday bookings may be non-refundable.</p>
+      <h3 style="margin-top:var(--space-6)">4. Guest Responsibilities</h3>
+      <p>Guests are responsible for any damage to hotel property during their stay. Quiet hours are from 10:00 PM to 7:00 AM. Smoking is prohibited in all indoor areas.</p>
+      <h3 style="margin-top:var(--space-6)">5. Limitation of Liability</h3>
+      <p>Demo Booking shall not be liable for any loss or damage to personal belongings. Guests are advised to use the in-room safe for valuables. The hotel reserves the right to refuse or terminate service at its discretion.</p>
+    ` : `
+      <p style="color:var(--color-text-muted);margin-bottom:var(--space-6)">最後更新：2026 年 4 月</p>
+      <h3>一、預訂規範</h3>
+      <p>所有預訂均視空房情況而定。預訂時需提供有效信用卡資訊。確認信將於 24 小時內寄送至您提供的電子信箱。</p>
+      <h3 style="margin-top:var(--space-6)">二、入住與退房</h3>
+      <p>入住時間：下午 3:00 起。退房時間：上午 11:00 前。提早入住/延遲退房依當日房況提供，可能酌收費用。入住時需出示有效政府核發之身分證件。</p>
+      <h3 style="margin-top:var(--space-6)">三、取消政策</h3>
+      <p>入住日 7 天前可免費取消；3-7 天前取消收取第一晚房費 50%；3 天內取消收取第一晚全額。特殊節日預訂可能不可退費。</p>
+      <h3 style="margin-top:var(--space-6)">四、旅客責任</h3>
+      <p>住宿期間如造成飯店財物損壞，旅客需負賠償責任。晚間 10:00 至早上 7:00 為安靜時段。所有室內區域禁止吸菸。</p>
+      <h3 style="margin-top:var(--space-6)">五、責任限制</h3>
+      <p>示範訂房對個人物品之遺失或損壞不負賠償責任，建議旅客使用房內保險箱存放貴重物品。飯店保留拒絕或終止服務之權利。</p>
+    `;
+    window.addEventListener('langchange', () => location.reload());
+  </script>
+</body>
+</html>

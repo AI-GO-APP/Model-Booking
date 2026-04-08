@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>常見問題 — 示範訂房 | FAQ — Demo Booking</title>
+  <meta name="description" content="關於預訂、入住、付款、取消退款等常見問題解答。">
+    <meta property="og:title" content="常見問題 — 示範訂房">
+  <meta property="og:description" content="預訂入住常見問題">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/images/hero/hero.png">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/nav-footer.css">
+  <link rel="stylesheet" href="css/pages/about.css">
+
+  <!-- FAQPage Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type": "Question", "name": "入住與退房時間是幾點？", "acceptedAnswer": {"@type": "Answer", "text": "入住時間為下午 3:00 後，退房時間為上午 11:00 前。如需提早入住或延遲退房，請提前與我們聯繫安排。"}},
+      {"@type": "Question", "name": "如何取消或變更預訂？", "acceptedAnswer": {"@type": "Answer", "text": "入住日 7 天前免費取消；3-7 天前收取第一晚房費 50%；3 天內取消收取第一晚全額房費。"}},
+      {"@type": "Question", "name": "是否提供免費停車場？", "acceptedAnswer": {"@type": "Answer", "text": "是的，我們提供免費地下停車場，共 40 個車位，先到先停。"}},
+      {"@type": "Question", "name": "早餐是否包含在房價中？", "acceptedAnswer": {"@type": "Answer", "text": "套房及以上房型包含雙人早餐；標準房型與豪華房型可加購早餐，每位 NT$ 680。"}},
+      {"@type": "Question", "name": "可以攜帶寵物入住嗎？", "acceptedAnswer": {"@type": "Answer", "text": "目前僅限小型犬（10公斤以下）入住指定寵物友善房型，需提前預約並支付清潔費 NT$ 1,500。"}}
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div id="navbar-mount"></div>
+  <main class="page-content">
+    <section class="page-hero" style="height:300px">
+      <div class="hero-bg"><img src="assets/images/hero/hero.png" alt="FAQ" width="1920" height="400"><div class="hero-overlay"></div></div>
+      <div class="page-hero-content">
+        <div class="section-label" style="color:var(--gold-400)" data-i18n="nav.faq">常見問題</div>
+        <h1 data-i18n="faq.subtitle">您想知道的，我們都準備好了</h1>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container-narrow">
+        <div id="faq-list"></div>
+      </div>
+    </section>
+  </main>
+  <div id="footer-mount"></div>
+  <script type="module">
+    import { initI18n, t } from './js/i18n.js';
+    import { initApp, initScrollAnimations } from './js/navigation.js';
+    initI18n(); initApp();
+
+    // FAQ 資料結構（用 i18n key）
+    const faqSections = [
+      { catKey: 'faq.cat.booking', items: [
+        { q: 'faq.q1', a: 'faq.a1' },
+        { q: 'faq.q2', a: 'faq.a2' },
+      ]},
+      { catKey: 'faq.cat.checkin', items: [
+        { q: 'faq.q3', a: 'faq.a3' },
+        { q: 'faq.q4', a: 'faq.a4' },
+      ]},
+      { catKey: 'faq.cat.payment', items: [
+        { q: 'faq.q5', a: 'faq.a5' },
+        { q: 'faq.q6', a: 'faq.a6' },
+      ]},
+      { catKey: 'faq.cat.cancel', items: [
+        { q: 'faq.q7', a: 'faq.a7' },
+      ]},
+      { catKey: 'faq.cat.facilities', items: [
+        { q: 'faq.q8', a: 'faq.a8' },
+        { q: 'faq.q9', a: 'faq.a9' },
+      ]},
+    ];
+
+    const list = document.getElementById('faq-list');
+    list.innerHTML = faqSections.map((sec, si) => `
+      <h3 style="${si > 0 ? 'margin: var(--space-8) 0 var(--space-4)' : 'margin-bottom:var(--space-4)'}">${t(sec.catKey)}</h3>
+      ${sec.items.map(item => `
+        <div class="accordion-item" data-animate>
+          <button class="accordion-header" aria-expanded="false">${t(item.q)}<span class="accordion-icon">▼</span></button>
+          <div class="accordion-body"><div class="accordion-content">${t(item.a)}</div></div>
+        </div>
+      `).join('')}
+    `).join('');
+
+    initScrollAnimations();
+
+    // Accordion 手風琴行為
+    document.querySelectorAll('.accordion-header').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.closest('.accordion-item');
+        const isOpen = item.classList.contains('open');
+        item.classList.toggle('open', !isOpen);
+        btn.setAttribute('aria-expanded', !isOpen);
+      });
+    });
+
+    window.addEventListener('langchange', () => location.reload());
+  </script>
+</body>
+</html>

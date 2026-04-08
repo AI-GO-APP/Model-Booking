@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>示範訂房 — 靜謐山海間的奢華旅居 | Demo Booking</title>
+  <meta name="description" content="示範訂房座落於台灣北海岸與九份山城之間，提供12種精心設計的頂級住宿體驗。立即預訂享受無與倫比的山海景觀。">
+  <meta name="keywords" content="台灣住宿,北海岸飯店,九份民宿,精品旅宿,豪華套房,海景房,山景房">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="示範訂房 — 靜謐山海間的奢華旅居">
+  <meta property="og:description" content="座落於台灣最美的海岸線，體驗無與倫比的頂級住宿">
+  <meta property="og:image" content="assets/images/hero/hero.png">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_TW">
+  <meta property="og:locale:alternate" content="en_US">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- hreflang -->
+  <link rel="alternate" hreflang="zh-TW" href="index.html">
+  <link rel="alternate" hreflang="en" href="index.html">
+  <link rel="canonical" href="index.html">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/nav-footer.css">
+  <link rel="stylesheet" href="css/pages/home.css">
+
+  <!-- Structured Data: Hotel -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Hotel",
+    "name": "示範訂房",
+    "alternateName": "Demo Booking",
+    "description": "座落於台灣北海岸與九份山城之間，將在地文化與現代奢華完美融合的精品旅宿。",
+    "image": "assets/images/hero/hero.png",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "中山路 168 號",
+      "addressLocality": "金山區",
+      "addressRegion": "新北市",
+      "postalCode": "208",
+      "addressCountry": "TW"
+    },
+    "telephone": "+886-2-2498-8888",
+    "email": "info@demobooking.tw",
+    "starRating": {
+      "@type": "Rating",
+      "ratingValue": "5"
+    },
+    "checkinTime": "15:00",
+    "checkoutTime": "11:00",
+    "numberOfRooms": 48,
+    "amenityFeature": [
+      { "@type": "LocationFeatureSpecification", "name": "免費 WiFi", "value": true },
+      { "@type": "LocationFeatureSpecification", "name": "無邊際泳池", "value": true },
+      { "@type": "LocationFeatureSpecification", "name": "SPA 水療中心", "value": true },
+      { "@type": "LocationFeatureSpecification", "name": "頂樓景觀餐廳", "value": true },
+      { "@type": "LocationFeatureSpecification", "name": "免費停車場", "value": true },
+      { "@type": "LocationFeatureSpecification", "name": "健身中心", "value": true }
+    ],
+    "availableLanguage": ["Chinese", "English"],
+    "priceRange": "NT$ 4,800 - NT$ 68,000",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "reviewCount": "326"
+    }
+  }
+  </script>
+
+  <!-- Breadcrumb Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "首頁", "item": "index.html" }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <!-- 導航列掛載點 -->
+  <div id="navbar-mount"></div>
+
+  <main>
+    <!-- ════════ Hero ════════ -->
+    <section class="hero" id="hero">
+      <div class="hero-bg">
+        <img src="assets/images/hero/hero.png" alt="示範訂房 — 台灣北海岸精品旅宿外觀" width="1920" height="1080" fetchpriority="high">
+        <div class="hero-overlay"></div>
+      </div>
+
+      <div class="hero-content">
+        <h1 class="hero-tagline" data-i18n="hero.tagline">靜謐山海間的奢華旅居</h1>
+        <p class="hero-subtitle" data-i18n="hero.subtitle">座落於台灣最美的海岸線，體驗無與倫比的頂級住宿</p>
+
+        <div class="hero-search-box" role="search" aria-label="搜尋空房">
+          <div class="search-field">
+            <label for="search-checkin" data-i18n="hero.checkin">入住日期</label>
+            <input type="date" id="search-checkin" aria-label="入住日期">
+          </div>
+          <div class="search-divider" aria-hidden="true"></div>
+          <div class="search-field">
+            <label for="search-checkout" data-i18n="hero.checkout">退房日期</label>
+            <input type="date" id="search-checkout" aria-label="退房日期">
+          </div>
+          <div class="search-divider" aria-hidden="true"></div>
+          <div class="search-field">
+            <label for="search-guests" data-i18n="hero.guests">旅客人數</label>
+            <input type="number" id="search-guests" min="1" max="10" value="2" aria-label="旅客人數">
+          </div>
+          <button class="search-btn" id="search-submit" data-i18n="hero.search">搜尋空房</button>
+        </div>
+      </div>
+
+      <div class="hero-scroll-hint" aria-hidden="true">
+        <span>SCROLL</span>
+        <div class="scroll-line"></div>
+      </div>
+    </section>
+
+    <!-- ════════ 精選房型 ════════ -->
+    <section class="featured-rooms section" id="featured-rooms">
+      <div class="container">
+        <div class="section-header" data-animate>
+          <div class="section-label" data-i18n="section.featured">精選房型</div>
+          <h2 data-i18n="section.featured.subtitle">每一間房都是一場與自然的對話</h2>
+        </div>
+
+        <div class="rooms-grid" id="featured-rooms-grid">
+          <!-- JS 動態渲染 -->
+        </div>
+
+        <div class="text-center" style="margin-top: var(--space-10);" data-animate>
+          <a href="rooms.html" class="btn btn-outline btn-lg" data-i18n="rooms.view">查看所有房型</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ 品牌故事 ════════ -->
+    <section class="brand-story" id="brand-story">
+      <div class="container">
+        <div class="story-grid">
+          <div class="story-img" data-animate>
+            <img src="assets/images/hero/hero.png" alt="示範訂房品牌故事 — 旅宿外觀" width="600" height="450" loading="lazy">
+          </div>
+          <div class="story-text" data-animate>
+            <div class="section-label" data-i18n="section.story">品牌故事</div>
+            <h2 data-i18n="about.subtitle">在山海之間<br>找到屬於您的寧靜時光</h2>
+            <p data-i18n="section.story.text">示範訂房座落於台灣北海岸與九份山城之間，將在地文化與現代奢華完美融合。我們相信，真正的旅行不只是到達目的地，更是一場身心靈的深度體驗。</p>
+            <p data-i18n="section.story.text2">從晨曦中甦醒的山嵐，到夕陽餘暉灑落的海面，每一刻都是大自然為您準備的禮物。我們的團隊以最誠摯的款待，讓您的每一次入住都成為珍貴的回憶。</p>
+            <a href="about.html" class="btn btn-outline" data-i18n="common.more">了解更多</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ 設施亮點 ════════ -->
+    <section class="facilities-highlight section" id="facilities-highlight">
+      <div class="container">
+        <div class="section-header" data-animate>
+          <div class="section-label" data-i18n="section.facilities">設施亮點</div>
+          <h2 data-i18n="section.facilities.subtitle">為您精心打造的完美體驗</h2>
+        </div>
+
+        <div class="facilities-grid" id="facilities-grid">
+          <!-- JS 動態渲染 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ 住客評價 ════════ -->
+    <section class="reviews-section" id="reviews">
+      <div class="container">
+        <div class="section-header" data-animate>
+          <div class="section-label" data-i18n="section.reviews">住客評價</div>
+          <h2 data-i18n="section.reviews.subtitle">來自真實旅客的感受</h2>
+        </div>
+
+        <div class="reviews-grid" id="reviews-grid">
+          <!-- JS 動態渲染 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════ CTA ════════ -->
+    <section class="cta-section" id="cta-section">
+      <div class="container" data-animate>
+        <div class="section-label" style="color: var(--gold-400);">✦</div>
+        <h2 data-i18n="section.cta">準備好您的旅程了嗎？</h2>
+        <p data-i18n="section.cta.text">讓我們為您安排一場難忘的住宿體驗</p>
+        <a href="booking.html" class="btn btn-accent btn-lg" data-i18n="section.cta.btn">立即預訂</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- 頁尾掛載點 -->
+  <div id="footer-mount"></div>
+
+  <script type="module" src="js/main-home.js"></script>
+</body>
+</html>

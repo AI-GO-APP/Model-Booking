@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>設施與服務 — 示範訂房 | Facilities — Demo Booking</title>
+  <meta name="description" content="探索示範訂房的頂級設施：無邊際泳池、SPA水療中心、頂樓景觀餐廳、健身中心與專屬管家服務。">
+    <meta property="og:title" content="設施服務 — 示範訂房">
+  <meta property="og:description" content="無邊際泳池SPA頂樓餐廳">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/images/hero/hero.png">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/nav-footer.css">
+  <link rel="stylesheet" href="css/pages/home.css">
+  <link rel="stylesheet" href="css/pages/about.css">
+</head>
+<body>
+  <div id="navbar-mount"></div>
+  <main class="page-content">
+    <section class="page-hero">
+      <div class="hero-bg"><img src="assets/images/facilities/pool.png" alt="無邊際泳池" width="1920" height="600"><div class="hero-overlay"></div></div>
+      <div class="page-hero-content">
+        <div class="section-label" style="color:var(--gold-400)" data-i18n="nav.facilities">設施服務</div>
+        <h1 data-i18n="facilities.subtitle">我們用心打造每一處空間</h1>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="grid grid-2" style="gap: var(--space-8)">
+          <div class="facility-detail-card" data-animate>
+            <img src="assets/images/facilities/pool.png" alt="無邊際泳池" width="600" height="400" loading="lazy" style="border-radius:var(--radius-xl);width:100%;aspect-ratio:16/10;object-fit:cover">
+            <h3 data-i18n="facility.pool">無邊際泳池</h3>
+            <p data-i18n="facility.pool.desc">懸崖邊際的無邊際泳池，與太平洋海天一線。恆溫水質，全年開放，日落時分更是最佳觀賞點。</p>
+            <span class="tag" data-i18n="facility.pool.time">開放時間: 06:00 - 22:00</span>
+          </div>
+          <div class="facility-detail-card" data-animate style="transition-delay:100ms">
+            <img src="assets/images/facilities/spa.png" alt="SPA 水療中心" width="600" height="400" loading="lazy" style="border-radius:var(--radius-xl);width:100%;aspect-ratio:16/10;object-fit:cover">
+            <h3 data-i18n="facility.spa">SPA 水療中心</h3>
+            <p data-i18n="facility.spa.desc">結合台灣在地溫泉精華的頂級水療體驗，提供芳療、熱石按摩、臉部護理等專業服務。</p>
+            <span class="tag" data-i18n="facility.spa.time">開放時間: 10:00 - 22:00（需預約）</span>
+          </div>
+          <div class="facility-detail-card" data-animate>
+            <img src="assets/images/facilities/restaurant.png" alt="頂樓景觀餐廳" width="600" height="400" loading="lazy" style="border-radius:var(--radius-xl);width:100%;aspect-ratio:16/10;object-fit:cover">
+            <h3 data-i18n="facility.restaurant">頂樓景觀餐廳</h3>
+            <p data-i18n="facility.restaurant.desc">由星級主廚掌廚，嚴選台灣在地食材，結合法式料理技法，為您呈現山海間的美食盛宴。</p>
+            <span class="tag" data-i18n="facility.restaurant.time">早餐 07:00-10:00 / 午餐 11:30-14:00 / 晚餐 17:30-21:00</span>
+          </div>
+          <div class="facility-detail-card" data-animate style="transition-delay:100ms">
+            <img src="assets/images/facilities/gym.png" alt="健身中心" width="600" height="400" loading="lazy" style="border-radius:var(--radius-xl);width:100%;aspect-ratio:16/10;object-fit:cover">
+            <h3 data-i18n="facility.gym">健身中心</h3>
+            <p data-i18n="facility.gym.desc">24小時開放的現代化健身空間，配備 Technogym 頂級器材、瑜伽室與個人教練服務。</p>
+            <span class="tag" data-i18n="facility.gym.time">24小時開放</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div id="footer-mount"></div>
+  <script type="module">
+    import { initI18n } from './js/i18n.js';
+    import { initApp, initScrollAnimations } from './js/navigation.js';
+    initI18n(); initApp(); initScrollAnimations();
+    window.addEventListener('langchange', () => location.reload());
+  </script>
+</body>
+</html>

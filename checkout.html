@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>結帳 — 示範訂房 | Checkout — Demo Booking</title>
+  <meta name="description" content="安全結帳，支援信用卡、LINE Pay、街口支付等多種付款方式，以及台灣統一發票選項。">
+    <meta property="og:title" content="結帳 — 示範訂房">
+  <meta property="og:description" content="安全結帳支援多種付款方式">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/images/hero/hero.png">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/nav-footer.css">
+  <link rel="stylesheet" href="css/pages/booking.css">
+  <link rel="stylesheet" href="css/pages/checkout.css">
+</head>
+<body>
+  <div id="navbar-mount"></div>
+  <main class="page-content" style="padding-top: 100px;">
+    <div class="container">
+      <div class="section-header"><h1 data-i18n="checkout.title">結帳</h1></div>
+      <div class="checkout-layout">
+        <!-- 左欄：付款 + 發票 -->
+        <div class="checkout-main">
+          <!-- 付款方式 -->
+          <div class="card-glass checkout-card" data-animate>
+            <h3 data-i18n="checkout.payment">付款方式</h3>
+            <div class="tabs" id="payment-tabs">
+              <button class="tab-btn active" data-tab="credit" data-i18n="checkout.payment.credit">信用卡</button>
+              <button class="tab-btn" data-tab="linepay" data-i18n="checkout.payment.linepay">LINE Pay</button>
+              <button class="tab-btn" data-tab="jkopay" data-i18n="checkout.payment.jkopay">街口支付</button>
+              <button class="tab-btn" data-tab="atm" data-i18n="checkout.payment.atm">銀行轉帳 / ATM</button>
+            </div>
+
+            <!-- 信用卡表單 -->
+            <div class="tab-content active" id="tab-credit">
+              <div class="payment-icons">
+                <span class="pay-icon">VISA</span>
+                <span class="pay-icon">Mastercard</span>
+                <span class="pay-icon">JCB</span>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="cc-number" data-i18n="checkout.card.number">卡號</label>
+                <input type="text" class="form-input" id="cc-number" placeholder="1234 5678 9012 3456" maxlength="19">
+              </div>
+              <div class="flex gap-4">
+                <div class="form-group" style="flex:1">
+                  <label class="form-label" for="cc-expiry" data-i18n="checkout.card.expiry">有效期限</label>
+                  <input type="text" class="form-input" id="cc-expiry" placeholder="MM / YY" maxlength="7">
+                </div>
+                <div class="form-group" style="flex:1">
+                  <label class="form-label" for="cc-cvv" data-i18n="checkout.card.cvv">安全碼</label>
+                  <input type="text" class="form-input" id="cc-cvv" placeholder="123" maxlength="4">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="cc-name" data-i18n="checkout.card.name">持卡人姓名</label>
+                <input type="text" class="form-input" id="cc-name">
+              </div>
+            </div>
+
+            <!-- LINE Pay -->
+            <div class="tab-content" id="tab-linepay">
+              <div class="alt-payment-info">
+                <div class="alt-payment-logo" style="background:#06C755; color:white; font-weight:700;">LINE Pay</div>
+                <p data-i18n="checkout.linepay.desc">點擊「確認預訂並付款」後，將跳轉至 LINE Pay 進行付款。</p>
+              </div>
+            </div>
+
+            <!-- 街口支付 -->
+            <div class="tab-content" id="tab-jkopay">
+              <div class="alt-payment-info">
+                <div class="alt-payment-logo" style="background:#FF6B00; color:white; font-weight:700;">街口支付</div>
+                <p data-i18n="checkout.jkopay.desc">點擊「確認預訂並付款」後，將跳轉至街口支付 App 進行付款。</p>
+              </div>
+            </div>
+
+            <!-- ATM -->
+            <div class="tab-content" id="tab-atm">
+              <div class="alt-payment-info">
+                <div class="alt-payment-logo" style="background:var(--navy-700); color:white; font-weight:700;">ATM</div>
+                <p data-i18n="checkout.atm.desc">確認預訂後，系統將提供虛擬帳號，請於 24 小時內完成轉帳。</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 發票選項 -->
+          <div class="card-glass checkout-card" data-animate>
+            <h3 data-i18n="checkout.invoice">發票資訊</h3>
+            <div class="invoice-options">
+              <label class="form-check active" id="inv-carrier-label">
+                <input type="radio" name="invoice" value="carrier" checked>
+                <div>
+                  <strong data-i18n="checkout.invoice.carrier">電子發票（手機條碼載具）</strong>
+                  <div class="form-group" style="margin-top:var(--space-3)">
+                    <input type="text" class="form-input" id="inv-carrier-code" placeholder="/ 開頭的條碼" data-i18n-attr="placeholder:checkout.invoice.carrier.code">
+                  </div>
+                </div>
+              </label>
+              <label class="form-check" id="inv-company-label">
+                <input type="radio" name="invoice" value="company">
+                <div>
+                  <strong data-i18n="checkout.invoice.company">公司三聯式發票</strong>
+                  <div class="company-fields" style="display:none; margin-top:var(--space-3)">
+                    <div class="form-group">
+                      <input type="text" class="form-input" id="inv-taxid" placeholder="統一編號" data-i18n-attr="placeholder:checkout.invoice.company.id">
+                    </div>
+                    <div class="form-group">
+                      <input type="text" class="form-input" id="inv-company-name" placeholder="公司抬頭" data-i18n-attr="placeholder:checkout.invoice.company.name">
+                    </div>
+                  </div>
+                </div>
+              </label>
+              <label class="form-check" id="inv-donate-label">
+                <input type="radio" name="invoice" value="donate">
+                <div><strong data-i18n="checkout.invoice.donate">捐贈發票</strong></div>
+              </label>
+            </div>
+          </div>
+
+          <!-- 條款 -->
+          <div class="checkout-terms" data-animate>
+            <label class="flex items-center gap-3" style="cursor:pointer">
+              <input type="checkbox" id="agree-terms" style="width:20px;height:20px;accent-color:var(--color-primary)">
+              <span><span data-i18n="checkout.agree">我同意</span> <a href="terms.html" target="_blank" data-i18n="checkout.terms">取消政策</a> 與 <a href="privacy.html" target="_blank" data-i18n="checkout.privacy">隱私權政策</a></span>
+            </label>
+          </div>
+
+          <div class="secure-badge" data-animate>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span data-i18n="checkout.secure">您的付款資訊已加密保護</span>
+          </div>
+        </div>
+
+        <!-- 右欄：訂單摘要 -->
+        <aside class="checkout-sidebar">
+          <div class="card-glass checkout-card sticky-sidebar" data-animate>
+            <h3 data-i18n="booking.summary">訂單摘要</h3>
+            <div id="checkout-summary" class="order-summary"></div>
+
+            <!-- 折扣碼 -->
+            <div class="coupon-row" style="margin-top:var(--space-4)">
+              <input type="text" class="form-input" id="coupon-code" style="flex:1" data-i18n-attr="placeholder:checkout.coupon">
+              <button class="btn btn-sm btn-outline" id="coupon-apply" data-i18n="checkout.coupon.apply">套用</button>
+            </div>
+
+            <button class="btn btn-accent btn-lg" style="width:100%; margin-top:var(--space-6)" id="submit-order" data-i18n="checkout.submit">確認預訂並付款</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+  <div id="footer-mount"></div>
+
+  <script type="module">
+    import { initI18n, t, getLang } from './js/i18n.js';
+    import { initApp, initScrollAnimations } from './js/navigation.js';
+    import { getRoomById, rooms as staticRooms } from './js/data/rooms.js';
+    import { isLoggedIn, getCachedUser } from './js/api/auth.js';
+    import { fetchRoomBySlug } from './js/api/rooms.js';
+    import { createBooking } from './js/api/bookings.js';
+    initI18n(); initApp();
+
+    const lang = getLang();
+    const params = new URLSearchParams(window.location.search);
+    let room = getRoomById(params.get('room')) || staticRooms[0];
+    const checkin = params.get('checkin') || '';
+    const checkout = params.get('checkout') || '';
+    const guests = params.get('guests') || 2;
+    const guestName = decodeURIComponent(params.get('gname') || '');
+    const guestPhone = decodeURIComponent(params.get('gphone') || '');
+    const guestEmail = decodeURIComponent(params.get('gemail') || '');
+    const specialRequest = decodeURIComponent(params.get('special') || '');
+    const nights = Math.max(1, Math.round((new Date(checkout) - new Date(checkin)) / 86400000)) || 1;
+    const total = room.price * nights;
+
+    document.getElementById('checkout-summary').innerHTML = `
+      <div class="summary-row"><span>${lang==='en'?room.nameEn:room.name}</span></div>
+      <div class="summary-row"><span>${checkin} ~ ${checkout}</span><span>${nights} ${t('common.nights')}</span></div>
+      <div class="summary-row"><span>${guests} ${t('common.guests')}</span></div>
+      <hr class="divider">
+      <div class="summary-row"><span>${t('rooms.pernight')}</span><span>${t('common.currency')} ${room.price.toLocaleString()}</span></div>
+      <div class="summary-row summary-total"><span>${t('booking.total')}</span><span class="price-display">${t('common.currency')} ${total.toLocaleString()}</span></div>
+    `;
+
+    // 嘗試 API 更新房型資料
+    (async () => {
+      if (isLoggedIn()) {
+        const r = await fetchRoomBySlug(params.get('room'));
+        if (r.ok && r.data) room = r.data;
+      }
+    })();
+
+    // Tab 切換
+    document.querySelectorAll('#payment-tabs .tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#payment-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+      });
+    });
+
+    // 發票選項切換
+    document.querySelectorAll('input[name="invoice"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        document.querySelectorAll('.form-check').forEach(c => c.classList.remove('active'));
+        radio.closest('.form-check').classList.add('active');
+        document.querySelector('.company-fields').style.display = radio.value === 'company' ? 'block' : 'none';
+      });
+    });
+
+    // 提交 — 真實呼叫 createBooking API
+    document.getElementById('submit-order').addEventListener('click', async () => {
+      if (!document.getElementById('agree-terms').checked) {
+        alert(t('checkout.agree.alert'));
+        return;
+      }
+
+      // 檢查登入
+      if (!isLoggedIn()) {
+        alert(lang === 'en' ? 'Please login first' : '請先登入會員');
+        window.location.href = 'account.html';
+        return;
+      }
+
+      const btn = document.getElementById('submit-order');
+      btn.disabled = true;
+      btn.textContent = lang === 'en' ? 'Processing...' : '處理中...';
+
+      // 取得發票資訊
+      const invoiceType = document.querySelector('input[name="invoice"]:checked')?.value || 'carrier';
+      const invoiceConfig = {};
+      if (invoiceType === 'carrier') {
+        invoiceConfig.format = 'duplicate';
+        invoiceConfig.carrierType = 'mobile';
+        invoiceConfig.carrierId = document.getElementById('inv-carrier-code')?.value || '';
+      } else if (invoiceType === 'company') {
+        invoiceConfig.format = 'triplicate';
+        invoiceConfig.taxType = 'tax_included';
+      } else {
+        invoiceConfig.format = 'none';
+      }
+
+      // 取得付款方式
+      const activeTab = document.querySelector('#payment-tabs .tab-btn.active');
+      const paymentMethod = activeTab?.dataset.tab || 'credit_card';
+
+      const user = getCachedUser();
+      const result = await createBooking({
+        roomId: room.aigoId || room.id,
+        roomSlug: params.get('room'),
+        roomName: lang === 'en' ? room.nameEn : room.name,
+        pricePerNight: room.price,
+        checkin,
+        checkout,
+        guestCount: Number(guests),
+        guest: {
+          name: guestName || user?.display_name || 'Guest',
+          phone: guestPhone || '',
+          email: guestEmail || user?.email || '',
+        },
+        userId: user?.id,
+        specialRequest,
+        paymentMethod,
+        invoice: invoiceConfig,
+      });
+
+      btn.disabled = false;
+      btn.textContent = t('checkout.submit') || '確認預訂並付款';
+
+      if (result.ok) {
+        window.location.href = `confirmation.html?room=${params.get('room')}&total=${total}&nights=${nights}&orderId=${result.data.orderId}&orderName=${encodeURIComponent(result.data.orderName || '')}`;
+      } else {
+        alert(lang === 'en' ? 'Booking failed. Please try again.' : '預訂失敗，請稍後再試');
+        console.error('Booking failed:', result);
+      }
+    });
+
+    initScrollAnimations();
+    window.addEventListener('langchange', () => location.reload());
+  </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>關於我們 — 示範訂房 | About — Demo Booking</title>
+  <meta name="description" content="了解示範訂房的品牌故事、理念與團隊，一段始於台灣北海岸的奢旅之旅。">
+    <meta property="og:title" content="關於我們 — 示範訂房">
+  <meta property="og:description" content="了解示範訂房的品牌故事">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/images/hero/hero.png">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/nav-footer.css">
+  <link rel="stylesheet" href="css/pages/home.css">
+  <link rel="stylesheet" href="css/pages/about.css">
+</head>
+<body>
+  <div id="navbar-mount"></div>
+  <main class="page-content">
+    <!-- Hero Banner -->
+    <section class="page-hero">
+      <div class="hero-bg"><img src="assets/images/hero/hero.png" alt="示範訂房外觀" width="1920" height="600"><div class="hero-overlay"></div></div>
+      <div class="page-hero-content">
+        <div class="section-label" style="color:var(--gold-400)" data-i18n="nav.about">關於我們</div>
+        <h1 data-i18n="about.subtitle">在山海之間，找到屬於您的寧靜時光</h1>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="story-grid" data-animate>
+          <div class="story-text">
+            <h2 data-i18n="about.story.title">我們的故事</h2>
+            <p data-i18n="about.story.p1">示範訂房的故事始於一個簡單的信念：每一位旅客都值得擁有一段超越期待的住宿體驗。</p>
+            <p data-i18n="about.story.p2">2020年，我們的創辦團隊在台灣北海岸與九份山城之間，發現了這塊被時光遺忘的寶地。這裡有著台灣最戲劇性的海岸線，山巒層疊如水墨畫般延伸至天際，而海浪日夜不歇地在崖壁上譜寫著自然的詩篇。</p>
+            <p data-i18n="about.story.p3">我們決定在這裡打造一處能讓人真正放下一切的空間——不只是一間旅宿，更是一場身心靈的歸零之旅。每一間客房都經過精心設計，將在地文化元素與現代奢華完美融合，讓旅客在舒適中感受台灣的山海之美。</p>
+          </div>
+          <div class="story-img">
+            <img src="assets/images/hero/hero.png" alt="品牌故事" width="600" height="450" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" style="background:var(--cream)">
+      <div class="container">
+        <div class="section-header" data-animate><h2 data-i18n="about.value.title">我們的理念</h2></div>
+        <div class="grid grid-3" style="margin-top:var(--space-8)">
+          <div class="facility-card" data-animate>
+            <div class="facility-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c-4-4-8-7.5-8-12a8 8 0 0 1 16 0c0 4.5-4 8-8 12z"/></svg></div>
+            <h4 data-i18n="about.value1.title">在地文化</h4>
+            <p data-i18n="about.value1.desc">每一處設計細節都融入台灣的在地元素，讓旅客在舒適中感受文化的溫度。</p>
+          </div>
+          <div class="facility-card" data-animate style="transition-delay:100ms">
+            <div class="facility-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/></svg></div>
+            <h4 data-i18n="about.value2.title">永續共好</h4>
+            <p data-i18n="about.value2.desc">我們致力於環境永續經營，使用在地食材、減少碳足跡，與自然和諧共存。</p>
+          </div>
+          <div class="facility-card" data-animate style="transition-delay:200ms">
+            <div class="facility-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+            <h4 data-i18n="about.value3.title">以客為尊</h4>
+            <p data-i18n="about.value3.desc">專屬管家服務，傾聽每一位旅客的需求，打造量身訂做的住宿體驗。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <div class="container" data-animate>
+        <h2 data-i18n="section.cta">準備好您的旅程了嗎？</h2>
+        <p data-i18n="section.cta.text">讓我們為您安排一場難忘的住宿體驗</p>
+        <a href="booking.html" class="btn btn-accent btn-lg" data-i18n="section.cta.btn">立即預訂</a>
+      </div>
+    </section>
+  </main>
+  <div id="footer-mount"></div>
+  <script type="module">
+    import { initI18n } from './js/i18n.js';
+    import { initApp, initScrollAnimations } from './js/navigation.js';
+    initI18n(); initApp(); initScrollAnimations();
+    window.addEventListener('langchange', () => location.reload());
+  </script>
+</body>
+</html>

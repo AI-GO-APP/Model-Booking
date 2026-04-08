@@ -1,0 +1,7 @@
+/* 預訂流程頁面樣式 */
+.booking-card { padding: var(--space-8); margin-bottom: var(--space-6); }
+.booking-card h3 { margin-bottom: var(--space-6); }
+.order-summary { display: flex; flex-direction: column; gap: var(--space-3); }
+.summary-row { display: flex; justify-content: space-between; align-items: center; font-size: var(--text-sm); color: var(--color-text-secondary); padding: var(--space-2) 0; }
+.summary-total { font-size: var(--text-lg); font-weight: var(--font-bold); color: var(--color-text); }
+.summary-total .price-display { font-family: var(--font-number); font-size: var(--text-2xl); color: var(--color-accent); }
