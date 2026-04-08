@@ -43,8 +43,8 @@
  * │  custom_data: { user_id, preferences }                  │
  * └─────────────────────────────────────────────────────────┘
  */
-import { authedRequest } from './config.js';
-import { ensureValidToken } from './auth.js';
+import { apiRequest } from './config.js';
+import { authedRequest } from './auth.js';
 import { withDomain, domainFilter } from './domain.js';
 
 /**
@@ -121,12 +121,7 @@ export async function createBooking(params) {
     amount_total: subtotal,
     amount_tax: 0,
     note: params.specialRequest || '',
-    // 台灣發票欄位（直接使用 sale_orders 內建欄位）
-    tax_type: params.invoice?.taxType || 'tax_included',
-    invoice_format: params.invoice?.format || 'none',
-    carrier_type: params.invoice?.carrierType || 'none',
-    carrier_id: params.invoice?.carrierId || '',
-    // 預訂專屬資料存入 custom_data（含 app_domain 隔離標籤）
+    // 將電子發票等非標準專用欄位全部移入 custom_data 防止 AI GO 拒絕請求
     custom_data: withDomain({
       checkin: params.checkin,
       checkout: params.checkout,
@@ -140,6 +135,12 @@ export async function createBooking(params) {
       booking_status: 'confirmed',
       room_slug: params.roomSlug,
       room_name: params.roomName,
+      invoice: {
+        tax_type: params.invoice?.taxType || 'tax_included',
+        invoice_format: params.invoice?.format || 'none',
+        carrier_type: params.invoice?.carrierType || 'none',
+        carrier_id: params.invoice?.carrierId || ''
+      }
     }),
   };
 
@@ -151,12 +152,12 @@ export async function createBooking(params) {
   // 3. 建立訂單明細（房型 × 晚數）
   const linePayload = {
     order_id: orderId,
-    product_template_id: params.roomId,
     name: params.roomName,
     product_uom_qty: nights,
     price_unit: params.pricePerNight,
-    price_subtotal: subtotal,
+    price_total: subtotal,
     custom_data: withDomain({
+      product_template_id: params.roomId,
       checkin: params.checkin,
       checkout: params.checkout,
     }),

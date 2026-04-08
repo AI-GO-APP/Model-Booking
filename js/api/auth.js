@@ -23,8 +23,8 @@ const EXPIRES_KEY = 'aigo_token_expires';
 function saveTokens(data) {
   localStorage.setItem(TOKEN_KEY, data.access_token);
   localStorage.setItem(REFRESH_KEY, data.refresh_token);
-  // 記錄到期時間（毫秒）
-  const expiresAt = Date.now() + (data.expires_in * 1000);
+  // 記錄到期時間（提前 60 秒失效以確保安全）
+  const expiresAt = Date.now() + (data.expires_in - 60) * 1000;
   localStorage.setItem(EXPIRES_KEY, String(expiresAt));
   if (data.user) {
     localStorage.setItem(USER_KEY, JSON.stringify(data.user));
@@ -38,13 +38,53 @@ function clearTokens() {
   localStorage.removeItem(EXPIRES_KEY);
 }
 
+/** 發送 Auth 變更事件給 Navbar 等 UI 元件 */
+export function dispatchAuthEvent() {
+  window.dispatchEvent(new Event('authChange'));
+}
+
 // ──── 公開 API ────
 
 /**
+ * 刷新 Token（Token Rotation：舊 refresh_token 立即失效）
+ */
+export async function refreshToken() {
+  const refreshTk = localStorage.getItem(REFRESH_KEY);
+  if (!refreshTk) {
+    clearTokens();
+    return false;
+  }
+  const r = await apiRequest('POST', `${AUTH_PREFIX}/refresh`, {
+    refresh_token: refreshTk,
+  });
+  if (r.ok) {
+    saveTokens(r.data);
+    return true;
+  } else {
+    // Refresh 失敗 → 強制清除（重新登入）
+    clearTokens();
+    return false;
+  }
+}
+
+/**
+ * 取得當前有效的 Token（若即將過期自動刷新）
+ */
+export async function getValidToken() {
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (!token) return null;
+
+  const expStr = localStorage.getItem(EXPIRES_KEY);
+  if (expStr && Date.now() > parseInt(expStr, 10)) {
+    console.debug('[Auth] Token 即將過期，自動刷新...');
+    const refreshed = await refreshToken();
+    return refreshed ? localStorage.getItem(TOKEN_KEY) : null;
+  }
+  return token;
+}
+
+/**
  * 註冊新用戶
- * @param {string} email
- * @param {string} password
- * @param {string} displayName
  */
 export async function register(email, password, displayName) {
   const r = await apiRequest('POST', `${AUTH_PREFIX}/register`, {
@@ -52,48 +92,39 @@ export async function register(email, password, displayName) {
     password,
     display_name: displayName,
   });
-  if (r.ok) saveTokens(r.data);
+  if (r.ok) {
+    saveTokens(r.data);
+    dispatchAuthEvent();
+  }
   return r;
 }
 
 /**
  * 用戶登入
- * @param {string} email
- * @param {string} password
  */
 export async function login(email, password) {
   const r = await apiRequest('POST', `${AUTH_PREFIX}/login`, { email, password });
-  if (r.ok) saveTokens(r.data);
+  if (r.ok) {
+    saveTokens(r.data);
+    dispatchAuthEvent();
+  }
   return r;
 }
 
 /**
- * 取得當前用戶資訊
+ * 取得當前用戶資訊並更新快取
  */
 export async function getMe() {
-  const token = localStorage.getItem(TOKEN_KEY);
+  const token = await getValidToken();
   if (!token) return { ok: false, status: 401, data: null };
   const r = await apiRequest('GET', `${AUTH_PREFIX}/me`, null, {
     'Authorization': `Bearer ${token}`,
   });
-  if (r.ok) localStorage.setItem(USER_KEY, JSON.stringify(r.data));
-  return r;
-}
-
-/**
- * 刷新 Token（Token Rotation：舊 refresh_token 立即失效）
- */
-export async function refreshToken() {
-  const refreshTk = localStorage.getItem(REFRESH_KEY);
-  if (!refreshTk) return { ok: false, status: 401, data: null };
-  const r = await apiRequest('POST', `${AUTH_PREFIX}/refresh`, {
-    refresh_token: refreshTk,
-  });
   if (r.ok) {
-    saveTokens(r.data);
-  } else {
-    // Refresh 失敗 → 強制清除（重新登入）
+    localStorage.setItem(USER_KEY, JSON.stringify(r.data));
+  } else if (r.status === 401) {
     clearTokens();
+    dispatchAuthEvent();
   }
   return r;
 }
@@ -105,13 +136,18 @@ export async function logout() {
   const token = localStorage.getItem(TOKEN_KEY);
   const refreshTk = localStorage.getItem(REFRESH_KEY);
   if (token && refreshTk) {
-    await apiRequest('POST', `${AUTH_PREFIX}/logout`, {
-      refresh_token: refreshTk,
-    }, {
-      'Authorization': `Bearer ${token}`,
-    });
+    try {
+      await apiRequest('POST', `${AUTH_PREFIX}/logout`, {
+        refresh_token: refreshTk,
+      }, {
+        'Authorization': `Bearer ${token}`,
+      });
+    } catch(e) {
+      console.warn('Logout API failed, continuing local clear', e);
+    }
   }
   clearTokens();
+  dispatchAuthEvent();
 }
 
 /**
@@ -130,43 +166,26 @@ export function getCachedUser() {
 }
 
 /**
- * Token 是否即將過期（距離到期 < 60 秒）
+ * 帶 Bearer Token 的 API 請求（用於已登入用戶，支援自動刷新）
  */
-export function isTokenExpiringSoon() {
-  const exp = localStorage.getItem(EXPIRES_KEY);
-  if (!exp) return true;
-  return Date.now() > (Number(exp) - 60000);
-}
-
-/**
- * 自動刷新守衛：在每次 API 呼叫前檢查並刷新
- */
-export async function ensureValidToken() {
-  if (!isLoggedIn()) return false;
-  if (isTokenExpiringSoon()) {
-    const r = await refreshToken();
-    return r.ok;
+export async function authedRequest(method, path, body = null) {
+  let token = await getValidToken();
+  if (!token) {
+    return { ok: false, status: 401, data: { detail: '未登入或登入已過期' } };
   }
-  return true;
-}
 
-/**
- * 處理 OAuth 回調（LINE Login 等日後擴充）
- * 解碼 URL query 中的 oauth_token 或 oauth_pending
- */
-export function handleOAuthCallback() {
-  const params = new URLSearchParams(window.location.search);
-  const encoded = params.get('oauth_token');
-  if (encoded) {
-    try {
-      const decoded = JSON.parse(atob(encoded));
-      saveTokens(decoded);
-      // 清除 URL 參數
-      window.history.replaceState({}, '', window.location.pathname);
-      return { ok: true, user: decoded.user };
-    } catch { /* 忽略解碼錯誤 */ }
+  let res = await apiRequest(method, path, body, { 'Authorization': `Bearer ${token}` });
+  
+  // Token 仍失效，強制再次刷新 (Double Check)
+  if (res.status === 401) {
+     console.debug('[Auth] API 401，嘗試強制刷新 Token');
+     const refreshed = await refreshToken();
+     if (refreshed) {
+         token = localStorage.getItem(TOKEN_KEY);
+         res = await apiRequest(method, path, body, { 'Authorization': `Bearer ${token}` });
+     } else {
+         return { ok: false, status: 401, data: { detail: '登入過期，請重新登入' } };
+     }
   }
-  const error = params.get('oauth_error');
-  if (error) return { ok: false, error };
-  return null;
+  return res;
 }

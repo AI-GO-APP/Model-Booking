@@ -1,0 +1,26 @@
+name: Deploy to Staging
+
+on:
+  workflow_dispatch:    # 允許手動觸發部署
+  push:
+    branches: [ main, dev ] # 監聽 dev 或 main 分支的合併
+
+concurrency:
+  group: staging-deploy-booking-platform
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: SSH and Deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.STAGING_HOST }}
+        username: deploy
+        key: ${{ secrets.STAGING_SSH_KEY }}
+        script: |
+          cd /opt/apps/Model-Booking
+          git fetch origin dev
+          git reset --hard FETCH_HEAD
+          docker compose -f docker-compose.staging.yml up -d --build

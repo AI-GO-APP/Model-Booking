@@ -13,8 +13,7 @@
  *                   bathroom, bathroom_en, view, view_en, featured, badge, badge_en,
  *                   amenities, amenities_en, image_path }
  */
-import { authedRequest } from './config.js';
-import { ensureValidToken } from './auth.js';
+import { authedRequest } from './auth.js';
 import { domainFilter } from './domain.js';
 
 /**

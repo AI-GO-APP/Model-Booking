@@ -32,13 +32,4 @@ export async function apiRequest(method, path, body = null, extraHeaders = {}) {
   }
 }
 
-/**
- * 帶 Bearer Token 的 API 請求（用於已登入用戶）
- */
-export function authedRequest(method, path, body = null) {
-  const token = localStorage.getItem('aigo_access_token');
-  if (!token) {
-    return Promise.resolve({ ok: false, status: 401, data: { detail: '未登入' } });
-  }
-  return apiRequest(method, path, body, { 'Authorization': `Bearer ${token}` });
-}
+// authedRequest has been moved to auth.js to support Token Rotation and avoid circular dependency.
