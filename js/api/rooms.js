@@ -97,7 +97,7 @@ export async function fetchRoomBySlug(slug) {
     if (found) return { ok: true, data: found };
   }
 
-  await ensureValidToken();
+
 
   const r = await authedRequest('POST', '/ext/proxy/product_templates/query', {
     filters: [

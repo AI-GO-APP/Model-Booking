@@ -99,7 +99,7 @@ function calcNights(checkin, checkout) {
  * @param {object} params.invoice - { format, taxType, carrierType, carrierId }
  */
 export async function createBooking(params) {
-  await ensureValidToken();
+
 
   const nights = calcNights(params.checkin, params.checkout);
   const subtotal = params.pricePerNight * nights;
