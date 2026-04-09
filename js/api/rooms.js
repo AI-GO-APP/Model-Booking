@@ -66,7 +66,6 @@ export async function fetchAllRooms() {
   // 快取命中
   if (isCacheValid()) return { ok: true, data: _roomsCache };
 
-  await ensureValidToken();
 
   // 使用進階查詢：type=service + app_domain=booking（雙重隔離）
   const r = await authedRequest('POST', '/ext/proxy/product_templates/query', {

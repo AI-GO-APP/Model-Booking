@@ -181,7 +181,6 @@ export async function createBooking(params) {
  * 取得用戶的所有訂單
  */
 export async function fetchMyOrders() {
-  await ensureValidToken();
 
   const r = await authedRequest('POST', '/ext/proxy/sale_orders/query', {
     filters: [
@@ -209,7 +208,6 @@ export async function fetchMyOrders() {
  * 取得單一訂單
  */
 export async function fetchOrder(orderId) {
-  await ensureValidToken();
 
   const r = await authedRequest('GET', `/ext/proxy/sale_orders/${orderId}`);
   if (r.ok) return { ok: true, data: transformOrder(r.data) };
@@ -253,7 +251,6 @@ function transformOrder(o) {
  * 提交住客評價（寫入 sale_orders.custom_data）
  */
 export async function submitReview(orderId, rating, comment) {
-  await ensureValidToken();
 
   // 先讀取現有 custom_data
   const existing = await authedRequest('GET', `/ext/proxy/sale_orders/${orderId}`);

@@ -254,6 +254,11 @@ export function initApp() {
     footerTarget.replaceWith(createFooter());
   }
 
+  // 偵測是否有 Hero 區塊（控制 navbar 文字顏色）
+  if (document.querySelector('.hero, .page-hero')) {
+    document.body.classList.add('has-hero');
+  }
+
   // 初始化行為
   initNavBehavior();
 

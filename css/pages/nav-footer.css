@@ -57,14 +57,14 @@
   letter-spacing: 0.05em;
 }
 
-.navbar:not(.scrolled) .brand-text,
-.navbar:not(.scrolled) .nav-link,
-.navbar:not(.scrolled) .btn-lang,
-.navbar:not(.scrolled) .btn-account {
+.has-hero .navbar:not(.scrolled) .brand-text,
+.has-hero .navbar:not(.scrolled) .nav-link,
+.has-hero .navbar:not(.scrolled) .btn-lang,
+.has-hero .navbar:not(.scrolled) .btn-account {
   color: white;
 }
 
-.navbar:not(.scrolled) .brand-icon {
+.has-hero .navbar:not(.scrolled) .brand-icon {
   color: var(--gold-400);
 }
 
@@ -95,7 +95,7 @@
   background: rgba(0, 0, 0, 0.04);
 }
 
-.navbar:not(.scrolled) .nav-link:hover {
+.has-hero .navbar:not(.scrolled) .nav-link:hover {
   color: white;
   background: rgba(255, 255, 255, 0.15);
 }
@@ -134,12 +134,12 @@
   color: var(--color-primary);
 }
 
-.navbar:not(.scrolled) .btn-lang {
+.has-hero .navbar:not(.scrolled) .btn-lang {
   border-color: rgba(255, 255, 255, 0.4);
   color: white;
 }
 
-.navbar:not(.scrolled) .btn-lang:hover {
+.has-hero .navbar:not(.scrolled) .btn-lang:hover {
   background: rgba(255, 255, 255, 0.15);
   border-color: rgba(255, 255, 255, 0.7);
 }
@@ -160,7 +160,7 @@
   color: var(--color-text);
 }
 
-.navbar:not(.scrolled) .btn-account:hover {
+.has-hero .navbar:not(.scrolled) .btn-account:hover {
   background: rgba(255, 255, 255, 0.15);
 }
 
@@ -182,7 +182,7 @@
   border-radius: var(--radius-md);
 }
 
-.navbar:not(.scrolled) .btn-mobile-menu {
+.has-hero .navbar:not(.scrolled) .btn-mobile-menu {
   color: white;
 }
 
